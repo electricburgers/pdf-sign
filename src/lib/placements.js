@@ -2,10 +2,10 @@
 // independent of zoom level. List operations are immutable.
 import { clampRect } from './geometry.js';
 
-export const KINDS = ['signature', 'initials'];
+export const KINDS = ['signature', 'initials', 'date', 'text'];
 export const MIN_WIDTH = 0.03;
 const DEFAULT_WIDTH = { signature: 0.35, initials: 0.12 };
-const DEFAULT_Y = { signature: 0.78, initials: 0.88 };
+const DEFAULT_Y = { signature: 0.78, initials: 0.88, date: 0.7, text: 0.6 };
 
 let counter = 0;
 function newId() {
@@ -14,10 +14,13 @@ function newId() {
   return `p${Date.now().toString(36)}${counter}${rand}`;
 }
 
-export function createPlacement({ kind, page, x, y, width, height }) {
+// A date placement also carries its own rendered `image` ({ dataUrl, width,
+// height }) plus the `text` and `font` it was made from.
+export function createPlacement({ kind, page, x, y, width, height, text, font, image }) {
   if (!KINDS.includes(kind)) throw new Error(`Unknown placement kind: ${kind}`);
   if (!Number.isInteger(page) || page < 0) throw new Error(`Invalid page index: ${page}`);
-  return { id: newId(), kind, page, ...clampRect({ x, y, width, height }) };
+  const extra = image ? { text, font, image } : {};
+  return { id: newId(), kind, page, ...clampRect({ x, y, width, height }), ...extra };
 }
 
 export function addPlacement(list, placement) {
@@ -63,10 +66,12 @@ export function resizePlacement(list, id, width, opts) {
   });
 }
 
-export function defaultPlacement(kind, page, opts) {
-  const width = DEFAULT_WIDTH[kind];
+export function defaultPlacement(kind, page, opts, extra = {}) {
+  const { width: customWidth, ...rest } = extra;
+  const width = customWidth ?? DEFAULT_WIDTH[kind];
   const height = heightFor(width, opts);
   return createPlacement({
+    ...rest,
     kind,
     page,
     x: 0.5 - width / 2,

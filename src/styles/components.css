@@ -272,6 +272,53 @@
   gap: 10px;
   flex: 1 1 260px;
 }
+.date-tool {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.date-tool h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.date-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+.field {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+}
+.field input,
+.field select {
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-sm);
+}
+.date-preview {
+  margin: 8px 0 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+@media (min-width: 640px) {
+  .date-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  }
+  .date-fields.text-fields {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  }
+}
 .pager {
   display: flex;
   align-items: center;
@@ -419,4 +466,22 @@
 .toast.error {
   background: var(--danger);
   color: var(--danger-ink);
+}
+
+.changes {
+  margin: 0 0 12px;
+}
+.changes summary {
+  cursor: pointer;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+.changes h4 {
+  margin: 12px 0 4px;
+}
+.changes ul {
+  margin: 0;
+  padding-left: 1.25rem;
 }

@@ -39,10 +39,11 @@ function sync(p) {
     $('#overlay').appendChild(el);
     elements.set(p.id, el);
   }
-  const asset = state.assets[p.kind];
+  const asset = p.image || state.assets[p.kind];
   const img = el.firstChild;
   if (asset && img.getAttribute('src') !== asset.dataUrl) img.src = asset.dataUrl;
-  el.setAttribute('aria-label', `${KIND_LABEL[p.kind]} on page ${p.page + 1}`);
+  const what = p.text ? `${KIND_LABEL[p.kind]} "${p.text}"` : KIND_LABEL[p.kind];
+  el.setAttribute('aria-label', `${what} on page ${p.page + 1}`);
   el.setAttribute('aria-pressed', String(p.id === state.selectedId));
   styleElement(el, p);
 }

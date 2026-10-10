@@ -12,7 +12,10 @@
     <meta name="description" content="Sign PDFs with your own signature and initials images, privately in your browser." />
     <title>PDF Sign</title>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <script>
       try {
         var t = localStorage.getItem('pdfsign:theme');
@@ -105,6 +108,40 @@
               </button>
             </nav>
           </div>
+          <div class="date-tool" role="group" aria-labelledby="dateTitle">
+            <h3 id="dateTitle">Date</h3>
+            <div class="date-fields">
+              <label class="field">
+                <span>Pick a date</span>
+                <input type="date" id="datePicker" />
+              </label>
+              <label class="field">
+                <span>Text to add</span>
+                <input type="text" id="dateText" maxlength="40" autocomplete="off" />
+              </label>
+              <label class="field">
+                <span>Font</span>
+                <select id="dateFont"></select>
+              </label>
+              <button class="btn" type="button" id="addDate">Add date</button>
+            </div>
+            <p class="date-preview" id="datePreview" aria-hidden="true"></p>
+          </div>
+          <div class="date-tool" role="group" aria-labelledby="textTitle">
+            <h3 id="textTitle">Free text</h3>
+            <div class="date-fields text-fields">
+              <label class="field">
+                <span>Text to add</span>
+                <input type="text" id="freeText" autocomplete="off" />
+              </label>
+              <label class="field">
+                <span>Font</span>
+                <select id="textFont"></select>
+              </label>
+              <button class="btn" type="button" id="addText">Add text</button>
+            </div>
+            <p class="date-preview" id="textPreview" aria-hidden="true"></p>
+          </div>
           <div class="desk" id="stage">
             <div class="page" id="page">
               <canvas id="pageCanvas" role="img" aria-label="PDF page preview"></canvas>
@@ -145,6 +182,11 @@
       <section class="about" aria-labelledby="aboutTitle">
         <h2 id="aboutTitle">About</h2>
         <p>PDF Sign <span id="appVersion">v0.0.0</span>, released <time id="appDate" datetime="">—</time>.</p>
+        <p>Built <time id="appBuild" datetime="">—</time>.</p>
+        <details class="changes">
+          <summary>What's new in this version</summary>
+          <div id="appChanges"></div>
+        </details>
         <p>Your files never leave this device. Everything runs in your browser. This adds a visible image of your signature, not a certificate-based digital signature.</p>
         <p class="disclaimer">Built with Claude, an AI model made by Anthropic. The code was AI-generated and checked with automated tests, but it may still contain mistakes. Review every signed PDF before you send it.</p>
       </section>

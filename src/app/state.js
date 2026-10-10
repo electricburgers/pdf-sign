@@ -31,10 +31,11 @@ export const bus = {
   },
 };
 
-export const KIND_LABEL = { signature: 'Signature', initials: 'Initials' };
+export const KIND_LABEL = { signature: 'Signature', initials: 'Initials', date: 'Date', text: 'Text' };
 
-export function imageAspect(kind) {
-  const a = state.assets[kind];
+// Accepts a kind name or a placement (dates carry their own image).
+export function imageAspect(target) {
+  const a = (target && target.image) || state.assets[target && target.kind ? target.kind : target];
   return a ? a.width / a.height : 3;
 }
 
@@ -42,8 +43,8 @@ export function pageAspect(page) {
   return state.pageAspects[page] || state.pageDisplay.width / state.pageDisplay.height;
 }
 
-export function aspectOpts(kind, page = state.pageIndex) {
-  return { imageAspect: imageAspect(kind), pageAspect: pageAspect(page) };
+export function aspectOpts(target, page = state.pageIndex) {
+  return { imageAspect: imageAspect(target), pageAspect: pageAspect(page) };
 }
 
 export function select(id) {

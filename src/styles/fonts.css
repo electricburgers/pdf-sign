@@ -1,0 +1,15 @@
+/* Bundled open-source fonts (SIL OFL) used for the typed date. Latin subset. */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('@fontsource/open-sans/files/open-sans-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('@fontsource/noto-serif/files/noto-serif-latin-400-normal.woff2') format('woff2');
+}

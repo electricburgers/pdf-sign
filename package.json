@@ -1,6 +1,6 @@
 {
   "name": "pdf-sign",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "Self-hosted web app that signs PDFs with your signature and initials images, entirely in the browser.",
   "scripts": {
     "test": "vitest run",
@@ -9,6 +9,8 @@
     "preview": "vite preview --port 8296"
   },
   "dependencies": {
+    "@fontsource/noto-serif": "^5.3.0",
+    "@fontsource/open-sans": "^5.3.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299"
   },
@@ -19,5 +21,5 @@
   },
   "type": "module",
   "private": true,
-  "releaseDate": "2026-10-10"
+  "releaseDate": "2026-10-10T18:32:30-04:00"
 }

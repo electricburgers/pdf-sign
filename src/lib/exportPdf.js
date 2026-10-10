@@ -28,16 +28,18 @@ export async function signPdf(pdfBytes, placements, assets) {
     if (!Number.isInteger(p.page) || p.page < 0 || p.page >= pageCount) {
       throw new Error(`Placement is on page ${p.page + 1}, but the PDF has ${pageCount} page(s).`);
     }
-    const asset = assets[p.kind];
+    // Dates carry their own rendered image; signature and initials share one each.
+    const asset = p.image || assets[p.kind];
     if (!asset) {
       throw new Error(`No ${p.kind} image has been added yet.`);
     }
-    if (!embedded.has(p.kind)) embedded.set(p.kind, await embed(doc, asset));
+    const key = p.image || p.kind;
+    if (!embedded.has(key)) embedded.set(key, await embed(doc, asset));
 
     const page = doc.getPage(p.page);
     const box = page.getCropBox();
     const params = placementToDrawParams(p, box, page.getRotation().angle);
-    page.drawImage(embedded.get(p.kind), {
+    page.drawImage(embedded.get(key), {
       x: params.x,
       y: params.y,
       width: params.width,

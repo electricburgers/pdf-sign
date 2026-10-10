@@ -9,6 +9,13 @@ import { $ } from './dom.js';
 // Decode each image's data URL once, not on every download.
 const decoders = { signature: memoizeLast(parseDataUrl), initials: memoizeLast(parseDataUrl) };
 
+// Each date image is decoded once per download; identical dates share one embed.
+const dateImages = new Map();
+function decodeImage(image) {
+  if (!dateImages.has(image.dataUrl)) dateImages.set(image.dataUrl, parseDataUrl(image.dataUrl));
+  return dateImages.get(image.dataUrl);
+}
+
 function save(bytes, name) {
   const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
   const a = document.createElement('a');
@@ -33,7 +40,8 @@ export function initDownload() {
       for (const kind of Object.keys(decoders)) {
         if (state.assets[kind]) assets[kind] = decoders[kind](state.assets[kind].dataUrl);
       }
-      const out = await signPdf(state.pdfBytes, placements.all(), assets);
+      const list = placements.all().map((p) => (p.image ? { ...p, image: decodeImage(p.image) } : p));
+      const out = await signPdf(state.pdfBytes, list, assets);
       const name = signedFileName(state.fileName);
       save(out, name);
       toast(`Downloaded ${name}.`);

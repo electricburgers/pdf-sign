@@ -3,6 +3,20 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-10-10
+
+### Added
+- Date tool: type a date or pick one with your device's native date picker, choose a font and place it on the page like a signature.
+- Free text tool with its own font picker, for adding a name, a note or anything else you need to type.
+- Open Sans (sans serif) and Noto Serif (serif), both open source (SIL OFL) and bundled with the app so typed text looks the same on every device.
+- New app icon (a document being signed with a pen) for the Safari favicon, the iOS home screen and the installable app, plus a web app manifest with maskable icons.
+- "Built" date and time in the About section, set each time the app is built.
+- "What's new" in the About section, taken from this changelog.
+
+### Changed
+- Typed dates and text are drawn to an image with the browser's own font rendering, so what you see on the page is what ends up in the downloaded PDF.
+- The release date in the About section now shows the time as well as the day.
+
 ## [1.1.0] - 2026-10-10
 
 ### Added

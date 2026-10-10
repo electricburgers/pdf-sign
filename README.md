@@ -1,12 +1,13 @@
 # PDF Sign
 
-**Version 1.1.0 — 2026-10-10** · see [CHANGELOG.md](CHANGELOG.md)
+**Version 1.3.0 — 2026-10-10 18:32 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
 
 A small self-hosted web app that does one thing: put your **signature** and **initials** images on a PDF.
 
 - Upload your signature and initials once (photo or image); they're saved in that browser only.
 - Paper background is removed automatically (adaptive, so grayish phone photos work).
 - Place by dragging, by tapping the move and size buttons, or with the keyboard. "Copy to all pages" handles initials.
+- Add a typed date (with the native date picker) or free text, each with its own font picker; Open Sans and Noto Serif are bundled.
 - Handles rotated pages and crop boxes correctly.
 - Separate phone, tablet and desktop layouts; light, dark and auto themes.
 - Meets WCAG 2.2 AA (automated contrast tests plus axe-core scans at all three sizes in both themes).

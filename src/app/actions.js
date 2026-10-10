@@ -26,7 +26,7 @@ export function moveBy(id, dx, dy) {
 
 export function resizeTo(id, width, base = placements.get(id)) {
   if (!base) return;
-  const [next] = resizePlacement([base], id, width, aspectOpts(base.kind, base.page));
+  const [next] = resizePlacement([base], id, width, aspectOpts(base, base.page));
   placements.update(id, { x: next.x, y: next.y, width: next.width, height: next.height });
 }
 
@@ -51,9 +51,20 @@ export function copyToAllPages(id) {
     .all()
     .filter((p) => p.id === id || !(p.kind === sel.kind && p.x === sel.x && p.y === sel.y && p.width === sel.width));
   placements.replaceAll(
-    applyToAllPages(kept, id, state.pageCount, { imageAspect: imageAspect(sel.kind), pageAspectOf: pageAspect }),
+    applyToAllPages(kept, id, state.pageCount, { imageAspect: imageAspect(sel), pageAspectOf: pageAspect }),
   );
   announce(`${KIND_LABEL[sel.kind]} copied to all ${state.pageCount} pages.`);
+}
+
+// Adds typed text (a date or free text) as an image placement.
+export function addTextItem(kind, image, text, font, width) {
+  if (!state.doc) return null;
+  const p = placements.add(
+    defaultPlacement(kind, state.pageIndex, aspectOpts(image), { image, text, font, width }),
+  );
+  select(p.id);
+  announce(`${KIND_LABEL[kind]} added to page ${state.pageIndex + 1}.`);
+  return p;
 }
 
 // Keep existing placements undistorted when an image is replaced.
