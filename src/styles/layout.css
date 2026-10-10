@@ -1,0 +1,174 @@
+/* Three layouts. Breakpoints match src/lib/layout.js (640 / 1024). */
+
+/* ---------- mobile (< 640px): one column, tools pinned to the bottom ---------- */
+.app {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'assets'
+    'pdf'
+    'editor'
+    'actions';
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px max(12px, env(safe-area-inset-left)) 12px max(12px, env(safe-area-inset-right));
+}
+.panel-assets { grid-area: assets; }
+.panel-pdf { grid-area: pdf; }
+.panel-editor { grid-area: editor; }
+.panel-actions { grid-area: actions; }
+
+/* Before a PDF is chosen, the editor and its tools stay out of the way on
+   small screens. */
+.app[data-has-pdf='false'] .panel-editor,
+.app[data-has-pdf='false'] .panel-actions {
+  display: none;
+}
+
+.panel-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  margin: 0 calc(-1 * max(12px, env(safe-area-inset-left))) -12px;
+  box-shadow: 0 -6px 20px rgba(20, 24, 33, 0.12);
+}
+.panel-actions .count {
+  display: none;
+}
+.panel-actions .selection-name {
+  display: none;
+}
+.tool-grid {
+  justify-content: space-between;
+}
+
+/* Toasts sit below the header on phones so they never cover the pinned tools. */
+@media (max-width: 639px) {
+  .toast {
+    top: calc(68px + env(safe-area-inset-top));
+    bottom: auto;
+  }
+}
+
+@media (max-width: 379px) {
+  .assets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .add-buttons {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- tablet (640px – 1023px): images and PDF side by side ---------- */
+@media (min-width: 640px) {
+  .app {
+    gap: 16px;
+    padding: 20px 24px;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-areas:
+      'assets pdf'
+      'editor editor'
+      'actions actions';
+  }
+  .panel {
+    padding: 22px;
+  }
+  .panel-pdf {
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-pdf .dropzone {
+    flex: 1;
+  }
+  .panel-actions {
+    position: static;
+    margin: 0;
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    padding: 18px 22px;
+  }
+  .panel-actions .count,
+  .panel-actions .selection-name {
+    display: block;
+  }
+  .panel-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+    align-items: center;
+    gap: 12px 24px;
+  }
+  .panel-actions .selection-tools {
+    margin: 0;
+    grid-row: span 2;
+  }
+  .panel-actions .count {
+    margin: 0;
+  }
+  .tool-grid {
+    justify-content: flex-start;
+  }
+  .desk {
+    padding: 24px;
+  }
+  .site-footer {
+    padding-inline: 24px;
+  }
+}
+
+/* ---------- desktop (>= 1024px): tools in a sticky sidebar, page on the right ---------- */
+@media (min-width: 1024px) {
+  .app {
+    gap: 20px;
+    padding: 24px 32px;
+    grid-template-columns: 380px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'assets editor'
+      'pdf editor'
+      'actions editor';
+    align-items: start;
+  }
+  /* On desktop the editor is always visible, showing an empty state first. */
+  .app[data-has-pdf='false'] .panel-editor {
+    display: block;
+  }
+  .panel-editor {
+    position: sticky;
+    top: 84px;
+    min-height: calc(100dvh - 120px);
+  }
+  .panel-pdf .dropzone {
+    flex: none;
+  }
+  .panel-actions {
+    display: block;
+  }
+  .panel-actions .selection-tools {
+    margin-bottom: 16px;
+  }
+  .panel-actions .count {
+    margin-top: 10px;
+  }
+  .empty-state {
+    min-height: 50vh;
+    align-content: center;
+  }
+  .site-footer {
+    padding-inline: 32px;
+  }
+  .about {
+    margin-left: 400px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .app {
+    grid-template-columns: 420px minmax(0, 1fr);
+  }
+  .about {
+    margin-left: 440px;
+  }
+}

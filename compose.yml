@@ -1,0 +1,15 @@
+services:
+  pdf-sign:
+    build: .
+    image: pdf-sign:latest
+    container_name: pdf-sign
+    ports:
+      - "8296:80"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
