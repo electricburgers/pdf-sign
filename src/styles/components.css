@@ -517,3 +517,28 @@
 #batchHint {
   margin: 6px 0 0;
 }
+
+/* ---------- mobile-only pieces: hidden until the phone layout turns them on ---------- */
+.setup-chip,
+.mobile-bar,
+.sheet-backdrop,
+.sel-head-actions,
+.sheet-close,
+.more-sheet {
+  display: none;
+}
+.sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sheet-head h3 {
+  margin: 0;
+}
+.date-tool .sheet-head {
+  margin-bottom: 8px;
+}
+.sel-head {
+  display: block;
+}

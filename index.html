@@ -39,7 +39,11 @@
       </button>
     </header>
 
-    <div class="app" id="app" data-has-pdf="false">
+    <div class="app" id="app" data-has-pdf="false" data-setup="open">
+      <button class="setup-chip" type="button" id="setupToggle" aria-expanded="true">
+        <span class="setup-name" id="setupName">Setup</span>
+        <span class="setup-action">Setup <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
       <section class="panel panel-assets" aria-labelledby="assetsTitle">
         <h2 id="assetsTitle"><span class="step" aria-hidden="true">1</span>Add your signature and initials</h2>
         <p class="hint">Upload a photo or image of each, once. They're saved on this device only.</p>
@@ -116,8 +120,8 @@
               </button>
             </nav>
           </div>
-          <div class="date-tool" role="group" aria-labelledby="dateTitle">
-            <h3 id="dateTitle">Date</h3>
+          <div class="date-tool" id="dateTool" role="group" aria-labelledby="dateTitle">
+            <div class="sheet-head"><h3 id="dateTitle">Date</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
             <div class="date-fields">
               <label class="field">
                 <span>Pick a date</span>
@@ -135,8 +139,8 @@
             </div>
             <p class="date-preview" id="datePreview" aria-hidden="true"></p>
           </div>
-          <div class="date-tool" role="group" aria-labelledby="textTitle">
-            <h3 id="textTitle">Free text</h3>
+          <div class="date-tool" id="textTool" role="group" aria-labelledby="textTitle">
+            <div class="sheet-head"><h3 id="textTitle">Free text</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
             <div class="date-fields text-fields">
               <label class="field">
                 <span>Text to add</span>
@@ -163,8 +167,14 @@
 
       <section class="panel panel-actions" id="actions" aria-label="Selected item and download">
         <div class="selection-tools" id="selectionTools" hidden>
-          <p class="selection-name" id="selectionName">Signature selected</p>
-          <div class="tool-grid">
+          <div class="sel-head">
+            <p class="selection-name" id="selectionName">Signature selected</p>
+            <div class="sel-head-actions">
+              <button class="btn btn-small" type="button" id="fineTune" aria-expanded="false" aria-controls="toolGrid">Fine-tune <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="btn btn-small btn-danger" type="button" id="deleteSelMobile">Delete</button>
+            </div>
+          </div>
+          <div class="tool-grid" id="toolGrid">
             <div class="nudge" role="group" aria-label="Move">
               <button class="btn btn-icon" type="button" data-nudge="up" aria-label="Move up"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <button class="btn btn-icon" type="button" data-nudge="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -192,6 +202,17 @@
             </div>
           </div>
         </div>
+        <nav class="mobile-bar" aria-label="Add to page">
+          <button class="mb" type="button" data-mb="signature"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 16c3-1 4-8 6-8s1 7 3 7 3-5 5-5 1 3 4 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg><span>Sign</span></button>
+          <button class="mb" type="button" data-mb="initials"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 18l4-11 4 11M6.6 14h4.8M16 11c1-1 4-1 4 1.5S16 14 16 16.5c0 1.5 3 1.5 4 .5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Initials</span></button>
+          <button class="mb" type="button" data-mb="date" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Date</span></button>
+          <button class="mb" type="button" data-mb="text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7V5h14v2M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Text</span></button>
+          <button class="mb" type="button" data-mb="more" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg><span>More</span></button>
+        </nav>
+        <div class="more-sheet" id="moreSheet" aria-label="More options">
+          <div class="sheet-head"><h3>More</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
+          <div class="more-body" id="moreBody"></div>
+        </div>
         <label class="check">
           <input type="checkbox" id="flatten" />
           <span>Flatten form fields so they can't be edited afterwards</span>
@@ -218,6 +239,7 @@
       </section>
     </footer>
 
+    <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
     <div class="toast" id="toast" aria-hidden="true" hidden></div>
     <div class="sr-only" id="liveStatus" role="status" aria-live="polite"></div>
     <div class="sr-only" id="liveAlert" role="alert" aria-live="assertive"></div>

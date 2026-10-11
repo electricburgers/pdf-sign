@@ -183,3 +183,223 @@
     display: none;
   }
 }
+
+/* ---------- phone layout: page first, tools at the thumb, sheets for the rest ---------- */
+@media (max-width: 639px) {
+  .app {
+    grid-template-areas:
+      'chip'
+      'assets'
+      'pdf'
+      'editor'
+      'actions';
+  }
+
+  /* Setup (signature, initials, PDF) folds into one chip once a PDF is open. */
+  .setup-chip {
+    grid-area: chip;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: var(--tap);
+    padding: 0 14px;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .app[data-has-pdf='true'] .setup-chip {
+    display: flex;
+  }
+  .setup-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .setup-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    color: var(--muted);
+  }
+  .setup-action svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.15s;
+  }
+  .app[data-setup='open'] .setup-action svg {
+    transform: rotate(180deg);
+  }
+  .app[data-has-pdf='true'][data-setup='closed'] .panel-assets,
+  .app[data-has-pdf='true'][data-setup='closed'] .panel-pdf {
+    display: none;
+  }
+
+  /* The step heading stays for screen readers; the page gets the room. */
+  .panel-editor > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .panel-editor {
+    padding-top: 8px;
+  }
+  .add-buttons {
+    display: none;
+  }
+  .editor-bar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+  /* Undo/Redo and the pager share one row at 375 px. */
+  .history-buttons {
+    gap: 4px;
+  }
+  .history-buttons .btn {
+    padding-inline: 10px;
+  }
+  .pager {
+    flex: 1 1 150px;
+    gap: 6px;
+  }
+  #pageLabel {
+    font-size: 0.875rem;
+  }
+
+  /* Bottom toolbar. */
+  .mobile-bar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .mb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 56px;
+    padding: 4px 2px;
+    font: inherit;
+    font-size: 0.8125rem;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+  }
+  .mb svg {
+    width: 24px;
+    height: 24px;
+  }
+  .mb[aria-expanded='true'] {
+    background: var(--bg-accent, var(--border));
+    outline: 2px solid var(--accent);
+  }
+
+  /* Selected item: one short row; the rest opens under Fine-tune. */
+  .panel-actions .selection-name {
+    display: block;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .sel-head-actions {
+    display: flex;
+    flex: none;
+    gap: 6px;
+  }
+  #fineTune svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: -3px;
+    transition: transform 0.15s;
+  }
+  #fineTune[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+  .selection-tools .tool-grid {
+    display: none;
+  }
+  .selection-tools[data-open] .tool-grid {
+    display: flex;
+  }
+  .sel-actions .btn-danger {
+    display: none;
+  }
+  .panel-actions .selection-tools {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 8px;
+  }
+  .sel-head {
+    min-width: 0;
+  }
+
+  /* Date, free text and More open as sheets over a dimmed page. */
+  .date-tool,
+  .more-sheet {
+    display: none;
+  }
+  .app[data-sheet='date'] #dateTool,
+  .app[data-sheet='text'] #textTool,
+  .app[data-sheet='more'] #moreSheet {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    max-height: 85vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 14px max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+    background: var(--surface);
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -8px 28px rgba(20, 24, 33, 0.28);
+  }
+  .sheet-close {
+    display: inline-flex;
+  }
+  .sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: rgba(10, 12, 16, 0.45);
+  }
+  .sheet-backdrop[hidden] {
+    display: none;
+  }
+  .more-body {
+    display: grid;
+    gap: 12px;
+  }
+  .more-body .check,
+  .more-body #batch {
+    margin: 0;
+  }
+  .more-body #batchHint {
+    display: block;
+    margin: 0;
+  }
+}

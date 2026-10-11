@@ -3,6 +3,18 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.6.0] - 2026-10-11
+
+### Changed
+- New phone layout (screens under 640 px wide) that puts the page first and the tools at your thumb:
+  - A bottom toolbar with Sign, Initials, Date, Text and More. Tapping Sign or Initials before you've uploaded one opens Setup and says what's missing.
+  - Date and Free text open as bottom sheets over a dimmed page, and close when you add the item. More holds the checkmark and X stamps, Flatten, and "Sign other PDFs the same way".
+  - Signature, initials and PDF choice fold into one "Setup" chip once a PDF is open.
+  - A selected item shows one short row (Fine-tune and Delete). Move, size, rotate, color and Copy to all pages open under Fine-tune.
+  - The pinned tools take about 190 px instead of up to 450 px, and the page preview is sized to fit the screen height.
+  - Sheets work with the keyboard: Escape closes, Tab stays inside, and focus returns to the button that opened it.
+- Tablet and desktop layouts are unchanged.
+
 ## [1.5.0] - 2026-10-10
 
 ### Added

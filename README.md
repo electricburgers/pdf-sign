@@ -1,6 +1,6 @@
 # PDF Sign
 
-**Version 1.5.0 — 2026-10-10 20:45 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
+**Version 1.6.0 — 2026-10-11 03:39 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
 
 A small self-hosted web app that does one thing: put your **signature** and **initials** images on a PDF.
 
@@ -11,7 +11,7 @@ A small self-hosted web app that does one thing: put your **signature** and **in
 - Checkmark/X stamps, color and rotation, undo/redo, optional form flattening, and "Sign other PDFs the same way" (several files download as one ZIP).
 - Works offline once opened: a service worker saves the app (HTTPS or localhost needed on iPhone).
 - Handles rotated pages and crop boxes correctly.
-- Separate phone, tablet and desktop layouts; light, dark and auto themes.
+- Separate phone, tablet and desktop layouts (on phones: page first, a bottom toolbar, and bottom sheets for date, text and more); light, dark and auto themes.
 - Meets WCAG 2.2 AA (automated contrast tests plus axe-core scans at all three sizes in both themes).
 - No double-tap zoom on iPhone/iPad; pinch-zoom still works.
 - 100% client-side: the PDF and images never leave your device. Served by nginx; no backend.

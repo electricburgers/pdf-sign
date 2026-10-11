@@ -70,7 +70,9 @@ export function initToolbar() {
   $('#redo').addEventListener('click', redo);
   document.addEventListener('keydown', onShortcut);
   history.subscribe(updateHistoryButtons);
-  $('#deleteSel').addEventListener('click', () => state.selectedId && remove(state.selectedId));
+  for (const id of ['#deleteSel', '#deleteSelMobile']) {
+    $(id).addEventListener('click', () => state.selectedId && remove(state.selectedId));
+  }
   $('#allPages').addEventListener('click', () => state.selectedId && copyToAllPages(state.selectedId));
 
   bus.on('assets', updateAddButtons);

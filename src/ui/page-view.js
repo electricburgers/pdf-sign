@@ -27,9 +27,10 @@ async function show() {
     const size = await pageSize(state.doc, index);
     const box = { x: 0, y: 0, width: size.width, height: size.height };
     let cssScale = fitScale(box, 0, available, MAX_SCALE[layout]);
-    if (layout === 'desktop') {
-      // Fit the whole page in the viewport height on desktop.
-      const maxH = window.innerHeight - 240;
+    if (layout !== 'tablet') {
+      // Fit the whole page in the viewport height; phones leave room for the
+      // top bar, setup chip, page controls and the pinned tools.
+      const maxH = window.innerHeight - (layout === 'mobile' ? 340 : 240);
       cssScale = Math.min(cssScale, Math.max(0.4, maxH / size.height));
     }
     const css = displaySize(box, 0, cssScale);
