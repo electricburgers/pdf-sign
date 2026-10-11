@@ -65,3 +65,39 @@ describe('checkFileSize', () => {
     expect(res.message).toMatch(/100 MB/);
   });
 });
+
+describe('validation edge cases', () => {
+  it('finds the PDF header after junk, but only within the first 1 KB', () => {
+    const near = new Uint8Array(600).fill(0x20);
+    near.set([0x25, 0x50, 0x44, 0x46], 500);
+    expect(isPdfBytes(near)).toBe(true);
+    const far = new Uint8Array(2000).fill(0x20);
+    far.set([0x25, 0x50, 0x44, 0x46], 1500);
+    expect(isPdfBytes(far)).toBe(false);
+  });
+
+  it('is not fooled by tiny or empty files', () => {
+    expect(isPdfBytes(new Uint8Array())).toBe(false);
+    expect(isPdfBytes(new Uint8Array([0x25, 0x50]))).toBe(false);
+  });
+
+  it('allows a file of exactly the limit and rejects one byte more', () => {
+    expect(checkFileSize(100, 100).ok).toBe(true);
+    const over = checkFileSize(101, 100);
+    expect(over.ok).toBe(false);
+    expect(over.message).toMatch(/too large/i);
+  });
+
+  it('names signed files from the base name, whatever the extension case', () => {
+    expect(signedFileName('Lease.PDF')).toBe('Lease-signed.pdf');
+    expect(signedFileName('')).toBe('document-signed.pdf');
+    expect(signedFileName('a.b.pdf')).toBe('a.b-signed.pdf');
+  });
+
+  it('decodes non-base64 data URLs and rejects malformed ones', () => {
+    const { mime, bytes } = parseDataUrl('data:text/plain,hi%20there');
+    expect(mime).toBe('text/plain');
+    expect(new TextDecoder().decode(bytes)).toBe('hi there');
+    expect(() => parseDataUrl('not a data url')).toThrow();
+  });
+});

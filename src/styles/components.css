@@ -425,22 +425,51 @@
   font-size: 0.875rem;
 }
 
-/* ---------- footer / about ---------- */
-.site-footer {
-  max-width: 1280px;
-  margin: 8px auto 0;
-  padding: 0 16px calc(28px + env(safe-area-inset-bottom));
+/* ---------- settings dialog ---------- */
+.settings {
+  width: min(92vw, 520px);
+  max-height: 85vh;
+  padding: 16px 18px calc(18px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
-.about {
-  max-width: 68ch;
+.settings::backdrop {
+  background: rgba(10, 12, 16, 0.5);
+}
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.settings-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.settings-section {
   display: grid;
   gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+.settings-section h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.settings-section .hint {
+  margin: 0;
+}
+.settings-section p {
+  margin: 0;
+}
+.about {
   color: var(--muted);
   font-size: 0.875rem;
-}
-.about h2 {
-  color: var(--text);
-  font-size: 0.9375rem;
 }
 .disclaimer {
   padding-left: 12px;

@@ -8,6 +8,7 @@ import { $, $$ } from './dom.js';
 
 const phone = window.matchMedia('(max-width: 639px)');
 const app = $('#app');
+const root = document.body; // holds data-sheet: the sheets sit in different parts of the page
 const backdrop = $('#sheetBackdrop');
 const SHEETS = { date: '#dateTool', text: '#textTool', more: '#moreSheet' };
 
@@ -36,12 +37,12 @@ function focusables(root) {
 }
 
 function closeSheet(restoreFocus = true) {
-  const name = app.dataset.sheet;
+  const name = root.dataset.sheet;
   if (!name) return;
   const sheet = $(SHEETS[name]);
   sheet.removeAttribute('role');
   sheet.removeAttribute('aria-modal');
-  delete app.dataset.sheet;
+  delete root.dataset.sheet;
   backdrop.hidden = true;
   if (opener) {
     opener.setAttribute('aria-expanded', 'false');
@@ -53,7 +54,7 @@ function closeSheet(restoreFocus = true) {
 function openSheet(name, trigger) {
   closeSheet(false);
   const sheet = $(SHEETS[name]);
-  app.dataset.sheet = name;
+  root.dataset.sheet = name;
   backdrop.hidden = false;
   opener = trigger;
   trigger.setAttribute('aria-expanded', 'true');
@@ -81,17 +82,17 @@ function onBarClick(button) {
     addKind(what);
     return;
   }
-  if (app.dataset.sheet === what) closeSheet();
+  if (root.dataset.sheet === what) closeSheet();
   else openSheet(what, button);
 }
 
 function onKeyDown(e) {
-  if (!app.dataset.sheet) return;
+  if (!root.dataset.sheet) return;
   if (e.key === 'Escape') {
     e.preventDefault();
     closeSheet();
   } else if (e.key === 'Tab') {
-    const items = focusables($(SHEETS[app.dataset.sheet]));
+    const items = focusables($(SHEETS[root.dataset.sheet]));
     if (!items.length) return;
     const first = items[0];
     const last = items[items.length - 1];

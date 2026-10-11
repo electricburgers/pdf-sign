@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toDateInputValue, dateFromInputValue, cleanDateText, MAX_DATE_CHARS, MAX_FREE_TEXT_CHARS } from '../src/lib/dateText.js';
+import { toDateInputValue, dateFromInputValue, cleanDateText, MAX_DATE_CHARS, MAX_FREE_TEXT_CHARS, fontById, fontCss, defaultDateWidth, DATE_FONTS, DEFAULT_DATE_FONT } from '../src/lib/dateText.js';
 
 describe('dateText', () => {
   it('formats a Date for the native picker in local time', () => {
@@ -57,5 +57,28 @@ describe('edge cases', () => {
   it('handles leap days', () => {
     expect(dateFromInputValue('2024-02-29', 'en-US')).toBe('February 29, 2024');
     expect(dateFromInputValue('2025-02-29', 'en-US')).toBe('');
+  });
+});
+
+describe('fonts and sizing', () => {
+  it('falls back to the default font for an unknown id', () => {
+    expect(fontById('comic-sans').id).toBe(DEFAULT_DATE_FONT);
+    expect(fontById(undefined).id).toBe(DEFAULT_DATE_FONT);
+  });
+
+  it('offers an open sans and an open serif font by id', () => {
+    const ids = DATE_FONTS.map((f) => f.id);
+    expect(ids).toEqual(expect.arrayContaining(['open-sans', 'noto-serif']));
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('builds a canvas font string with the size and family', () => {
+    expect(fontCss('noto-serif', 64)).toBe("64px 'Noto Serif', serif");
+  });
+
+  it('keeps typed text at about 11 pt on a Letter page whatever size it was drawn at', () => {
+    const w = defaultDateWidth(640, 64);
+    expect(w).toBeCloseTo((640 * (11 / 64)) / 612, 8);
+    expect(defaultDateWidth(1280, 128)).toBeCloseTo(w, 8);
   });
 });

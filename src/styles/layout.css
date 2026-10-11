@@ -113,9 +113,6 @@
   .desk {
     padding: 24px;
   }
-  .site-footer {
-    padding-inline: 24px;
-  }
 }
 
 /* ---------- desktop (>= 1024px): tools in a sticky sidebar, page on the right ---------- */
@@ -156,20 +153,11 @@
     min-height: 50vh;
     align-content: center;
   }
-  .site-footer {
-    padding-inline: 32px;
-  }
-  .about {
-    margin-left: 400px;
-  }
 }
 
 @media (min-width: 1440px) {
   .app {
     grid-template-columns: 420px minmax(0, 1fr);
-  }
-  .about {
-    margin-left: 440px;
   }
 }
 
@@ -358,9 +346,9 @@
   .more-sheet {
     display: none;
   }
-  .app[data-sheet='date'] #dateTool,
-  .app[data-sheet='text'] #textTool,
-  .app[data-sheet='more'] #moreSheet {
+  body[data-sheet='date'] #dateTool,
+  body[data-sheet='text'] #textTool,
+  body[data-sheet='more'] #moreSheet {
     display: block;
     position: fixed;
     left: 0;

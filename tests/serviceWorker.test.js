@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
@@ -24,8 +24,9 @@ function setup({ online, store = new Map(), version = 'test', files = ['/', '/as
     delete: async (n) => store.delete(n),
   };
   const fetch = async (r) => {
+    if (online.value === 'hang') return new Promise(() => {}); // a server that never answers
     if (!online.value) throw new TypeError('network down');
-    return { ok: true, clone() { return this; }, text: async () => `live:${key(r)}` };
+    return { ok: online.value !== 'bad', clone() { return this; }, text: async () => `live:${key(r)}` };
   };
   const self = {
     location: { origin: 'http://app.test' },
@@ -111,5 +112,42 @@ describe('service worker', () => {
       ]);
       expect(handled).toBe(false);
     }
+  });
+
+  it('falls back to the saved page after 3 seconds when the server hangs', async () => {
+    vi.useFakeTimers();
+    try {
+      const online = { value: true };
+      const sw = setup({ online });
+      await sw.run('install', {});
+      online.value = 'hang';
+      const pending = sw.run('fetch', { request: { url: 'http://app.test/', method: 'GET', mode: 'navigate' } });
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(await (await pending).text()).toBe('saved:/');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('saves a file that was not precached the first time it is fetched, then serves it offline', async () => {
+    const online = { value: true };
+    const sw = setup({ online });
+    await sw.run('install', {});
+    const request = { url: 'http://app.test/assets/lazy.js', method: 'GET', mode: 'no-cors' };
+    expect(await (await sw.run('fetch', { request })).text()).toBe('live:/assets/lazy.js');
+    await new Promise((r) => setTimeout(r, 0)); // the copy is saved in the background
+    online.value = false;
+    expect(await (await sw.run('fetch', { request })).text()).toBe('live:/assets/lazy.js');
+  });
+
+  it('does not save error responses', async () => {
+    const online = { value: 'bad' };
+    const sw = setup({ online });
+    await sw.run('install', {});
+    const request = { url: 'http://app.test/assets/missing.js', method: 'GET', mode: 'no-cors' };
+    await sw.run('fetch', { request });
+    await new Promise((r) => setTimeout(r, 0));
+    online.value = false;
+    await expect(Promise.race([sw.run('fetch', { request }), new Promise((_, rej) => setTimeout(() => rej(new Error('network down')), 50))])).rejects.toThrow();
   });
 });

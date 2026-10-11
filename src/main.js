@@ -11,6 +11,7 @@ import { initTextTool } from './ui/text-tool.js';
 import { initStampTool } from './ui/stamp-tool.js';
 import { initBatch } from './ui/batch.js';
 import { initMobileUi } from './ui/mobile-ui.js';
+import { initSettings } from './ui/settings.js';
 import { initDownload } from './ui/download.js';
 import { initAbout } from './ui/about.js';
 
@@ -25,6 +26,7 @@ initTextTool();
 initStampTool();
 initBatch();
 initMobileUi();
+initSettings();
 initDownload();
 initAssetsPanel();
 

@@ -3,6 +3,15 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.7.0] - 2026-10-11
+
+### Added
+- Settings: a gear button in the top bar opens a settings dialog. The theme switch (Auto, Light, Dark), the About details, the "What's new" notes and the Claude disclaimer now live there instead of in the page footer. The dialog closes with Done, Escape, or a tap outside it.
+- 53 new tests (196 in total): layout and settings structure checks, accessibility checks on the page (unique ids, labels, button names, ids the scripts look up), release checks (the version, changelog and README date must agree), manifest and icon checks, more file-validation and date-text cases, and more service worker cases.
+
+### Fixed
+- On the installed iPhone app, tapping an option in the "More" sheet (checkmark, X, Flatten, Sign other PDFs) only dimmed and closed the sheet. The sheet sat inside the pinned bottom panel, which hid it behind the dimmed backdrop, so taps hit the backdrop. The sheet now sits at the top level of the page, above the backdrop.
+
 ## [1.6.0] - 2026-10-11
 
 ### Changed

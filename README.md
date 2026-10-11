@@ -1,6 +1,6 @@
 # PDF Sign
 
-**Version 1.6.0 — 2026-10-11 03:39 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
+**Version 1.7.0 — 2026-10-11 05:56 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
 
 A small self-hosted web app that does one thing: put your **signature** and **initials** images on a PDF.
 
@@ -9,6 +9,7 @@ A small self-hosted web app that does one thing: put your **signature** and **in
 - Place by dragging, by tapping the move and size buttons, or with the keyboard. "Copy to all pages" handles initials.
 - Add a typed date (with the native date picker) or free text, each with its own font picker; Open Sans and Noto Serif are bundled.
 - Checkmark/X stamps, color and rotation, undo/redo, optional form flattening, and "Sign other PDFs the same way" (several files download as one ZIP).
+- A settings dialog (gear in the top bar) holds the theme, version, release notes and disclaimer.
 - Works offline once opened: a service worker saves the app (HTTPS or localhost needed on iPhone).
 - Handles rotated pages and crop boxes correctly.
 - Separate phone, tablet and desktop layouts (on phones: page first, a bottom toolbar, and bottom sheets for date, text and more); light, dark and auto themes.
