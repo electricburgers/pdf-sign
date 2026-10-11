@@ -1,12 +1,12 @@
-// Phone layout behavior (< 640 px wide): the bottom toolbar, the bottom sheets
-// for Date / Text / More, the Setup chip, and the Fine-tune toggle. On larger
-// screens none of this is active and everything sits where it always did.
+// The quick bar (Sign, Initials, Date, Text, More), the sheets for Date / Text /
+// More, the Setup chip and the Fine-tune toggle. They work the same at every
+// screen size: a bottom toolbar on phones, the sidebar or action bar on larger
+// screens. Sheets slide up on phones and float in the middle on larger screens.
 import { state, bus } from '../app/state.js';
 import { addKind } from '../app/actions.js';
 import { toast } from './announce.js';
 import { $, $$ } from './dom.js';
 
-const phone = window.matchMedia('(max-width: 639px)');
 const app = $('#app');
 const root = document.body; // holds data-sheet: the sheets sit in different parts of the page
 const backdrop = $('#sheetBackdrop');
@@ -15,10 +15,10 @@ const SHEETS = { date: '#dateTool', text: '#textTool', more: '#moreSheet' };
 let opener = null;
 const moved = []; // { node, placeholder } for items living in the More sheet
 
-// Rare options live in the More sheet on phones. Moving the real elements (not
-// copies) keeps their ids and listeners; they go back when the screen widens.
-function relocate(toSheet) {
-  if (toSheet && !moved.length) {
+// Rare options live in the More sheet. They are moved there (the real elements,
+// not copies) so their ids and listeners keep working.
+function relocateToMore() {
+  if (!moved.length) {
     const body = $('#moreBody');
     const nodes = [$('.mark-buttons'), $('#flatten').closest('label'), $('#batch'), $('#batchInput'), $('#batchHint')];
     for (const node of nodes) {
@@ -27,8 +27,6 @@ function relocate(toSheet) {
       body.append(node);
       moved.push({ node, placeholder });
     }
-  } else if (!toSheet) {
-    for (const { node, placeholder } of moved.splice(0)) placeholder.replaceWith(node);
   }
 }
 
@@ -70,7 +68,7 @@ function setSetup(open) {
 }
 
 function onBarClick(button) {
-  const what = button.dataset.mb;
+  const what = button.dataset.qb;
   if (what === 'signature' || what === 'initials') {
     if (!state.assets[what]) {
       // Explain instead of leaving a dead button: open Setup where the upload is.
@@ -106,14 +104,14 @@ function onKeyDown(e) {
   }
 }
 
-export function initMobileUi() {
-  $$('[data-mb]').forEach((b) => b.addEventListener('click', () => onBarClick(b)));
+export function initQuickBar() {
+  $$('[data-qb]').forEach((b) => b.addEventListener('click', () => onBarClick(b)));
   $$('[data-sheet-close]').forEach((b) => b.addEventListener('click', () => closeSheet()));
   backdrop.addEventListener('click', () => closeSheet());
   document.addEventListener('keydown', onKeyDown);
 
   // Adding something is the end of the task: close the sheet to show the page.
-  for (const sel of ['#addDate', '#addText']) $(sel).addEventListener('click', () => phone.matches && closeSheet());
+  for (const sel of ['#addDate', '#addText']) $(sel).addEventListener('click', () => closeSheet());
   $('#moreBody').addEventListener('click', (e) => {
     if (e.target.closest('[data-stamp]')) closeSheet();
   });
@@ -132,13 +130,5 @@ export function initMobileUi() {
     setSetup(!state.assets.signature);
   });
 
-  const apply = () => {
-    if (phone.matches) relocate(true);
-    else {
-      closeSheet(false);
-      relocate(false);
-    }
-  };
-  phone.addEventListener('change', apply);
-  apply();
+  relocateToMore();
 }

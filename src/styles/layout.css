@@ -1,23 +1,17 @@
-/* Three layouts. Breakpoints match src/lib/layout.js (640 / 1024). */
+/* Layouts. Breakpoints match src/lib/layout.js (640 / 1024).
+   Every size uses the same quick bar, Setup chip and sheets; only the
+   arrangement changes: tools pinned to the bottom on phones, a bar under the
+   page on tablets, a sticky sidebar on desktops. */
 
-/* ---------- mobile (< 640px): one column, tools pinned to the bottom ---------- */
+/* ---------- phone (< 640px): one column, in page order ---------- */
 .app {
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    'assets'
-    'pdf'
-    'editor'
-    'actions';
   max-width: 1280px;
   margin: 0 auto;
   padding: 12px max(12px, env(safe-area-inset-left)) 12px max(12px, env(safe-area-inset-right));
 }
-.panel-assets { grid-area: assets; }
-.panel-pdf { grid-area: pdf; }
-.panel-editor { grid-area: editor; }
-.panel-actions { grid-area: actions; }
 
 /* Before a PDF is chosen, the editor and its tools stay out of the way on
    small screens. */
@@ -38,18 +32,23 @@
 .panel-actions .count {
   display: none;
 }
-.panel-actions .selection-name {
-  display: none;
-}
 .tool-grid {
   justify-content: space-between;
 }
 
-/* Toasts sit below the header on phones so they never cover the pinned tools. */
+/* Toasts sit below the header on phones so they never cover the pinned tools.
+   The pinned tools scroll instead of covering the page. */
 @media (max-width: 639px) {
   .toast {
     top: calc(68px + env(safe-area-inset-top));
     bottom: auto;
+  }
+  .panel-actions {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  #batchHint {
+    display: none;
   }
 }
 
@@ -57,22 +56,240 @@
   .assets {
     grid-template-columns: minmax(0, 1fr);
   }
-  .add-buttons {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
-/* ---------- tablet (640px – 1023px): images and PDF side by side ---------- */
+/* ---------- pieces used at every size ---------- */
+
+/* Setup (signature, initials, PDF) folds into one chip once a PDF is open. */
+.setup-chip {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--tap);
+  padding: 0 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.app[data-has-pdf='true'] .setup-chip {
+  display: flex;
+}
+.setup-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.setup-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  color: var(--muted);
+}
+.setup-action svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.15s;
+}
+.app[data-setup='open'] .setup-action svg {
+  transform: rotate(180deg);
+}
+.app[data-has-pdf='true'][data-setup='closed'] .panel-assets,
+.app[data-has-pdf='true'][data-setup='closed'] .panel-pdf {
+  display: none;
+}
+
+/* The step heading stays for screen readers; the page gets the room. */
+.panel-editor > h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.panel-editor {
+  padding-top: 8px;
+}
+.add-buttons {
+  display: none;
+}
+.editor-bar {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.history-buttons {
+  gap: 4px;
+}
+.history-buttons .btn {
+  padding-inline: 10px;
+}
+.pager {
+  flex: 1 1 150px;
+  gap: 6px;
+}
+#pageLabel {
+  font-size: 0.875rem;
+}
+
+/* Quick bar. */
+.quick-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.qb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: 4px 2px;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+.qb svg {
+  width: 24px;
+  height: 24px;
+}
+.qb[aria-expanded='true'] {
+  background: var(--bg-accent, var(--border));
+  outline: 2px solid var(--accent);
+}
+
+/* Selected item: one short row; the rest opens under Fine-tune. */
+.panel-actions .selection-name {
+  display: block;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.sel-head-actions {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+#fineTune svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+  transition: transform 0.15s;
+}
+#fineTune[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.selection-tools .tool-grid {
+  display: none;
+}
+.selection-tools[data-open] .tool-grid {
+  display: flex;
+}
+.sel-actions .btn-danger {
+  display: none;
+}
+.panel-actions .selection-tools {
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 8px;
+}
+
+/* Date, free text and More open as sheets over a dimmed page. */
+.date-tool,
+.more-sheet {
+  display: none;
+}
+body[data-sheet='date'] #dateTool,
+body[data-sheet='text'] #textTool,
+body[data-sheet='more'] #moreSheet {
+  display: block;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  max-height: 85vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 14px max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  background: var(--surface);
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 -8px 28px rgba(20, 24, 33, 0.28);
+}
+.sheet-close {
+  display: inline-flex;
+}
+.sheet-backdrop {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(10, 12, 16, 0.45);
+}
+.sheet-backdrop[hidden] {
+  display: none;
+}
+.more-body {
+  display: grid;
+  gap: 12px;
+}
+.more-body .check,
+.more-body #batch {
+  margin: 0;
+}
+.more-body #batchHint {
+  margin: 0;
+}
+
+/* ---------- tablet (640px - 1023px): setup beside each other, bar under the page ---------- */
 @media (min-width: 640px) {
   .app {
     gap: 16px;
     padding: 20px 24px;
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     grid-template-areas:
+      'chip chip'
       'assets pdf'
       'editor editor'
       'actions actions';
   }
+  .app[data-has-pdf='false'] {
+    grid-template-areas: 'assets pdf';
+  }
+  .app[data-has-pdf='true'][data-setup='closed'] {
+    grid-template-areas:
+      'chip chip'
+      'editor editor'
+      'actions actions';
+  }
+  .setup-chip { grid-area: chip; }
+  .panel-assets { grid-area: assets; }
+  .panel-pdf { grid-area: pdf; }
+  .panel-editor { grid-area: editor; }
+  .panel-actions { grid-area: actions; }
+
   .panel {
     padding: 22px;
   }
@@ -89,22 +306,30 @@
     border-radius: var(--radius-lg);
     box-shadow: none;
     padding: 18px 22px;
-  }
-  .panel-actions .count,
-  .panel-actions .selection-name {
-    display: block;
-  }
-  .panel-actions {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
     align-items: center;
     gap: 12px 24px;
   }
-  .panel-actions .selection-tools {
+  .panel-actions .quick-bar {
+    grid-column: 1;
+    grid-row: 1;
     margin: 0;
-    grid-row: span 2;
+    max-width: 480px;
+  }
+  .panel-actions .selection-tools {
+    grid-column: 1;
+    grid-row: 2;
+    margin: 0;
+  }
+  .panel-actions #download {
+    grid-column: 2;
+    grid-row: 1;
   }
   .panel-actions .count {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
     margin: 0;
   }
   .tool-grid {
@@ -112,6 +337,59 @@
   }
   .desk {
     padding: 24px;
+  }
+
+  /* The bar can stand beside the page (the default here) or sit above the tools. */
+  .bar-toggle {
+    display: inline-flex;
+  }
+  .app[data-bar='vertical'] .stage-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .app[data-bar='vertical'] .stage-row > .desk {
+    flex: 1;
+    min-width: 0;
+  }
+  .app[data-bar='vertical'] .stage-row > .quick-bar {
+    grid-template-columns: minmax(0, 1fr);
+    flex: none;
+    width: 76px;
+    max-width: none;
+    margin: 0;
+    padding: 6px;
+    gap: 2px;
+    position: sticky;
+    top: 96px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .app[data-bar='vertical'] .panel-actions .selection-tools {
+    grid-row: 1;
+  }
+  .app[data-bar='vertical'] .panel-actions #download {
+    grid-row: 1;
+  }
+  .app[data-bar='vertical'] .panel-actions .count {
+    grid-row: 2;
+  }
+
+  /* Sheets float in the middle of the screen instead of sliding up. */
+  body[data-sheet='date'] #dateTool,
+  body[data-sheet='text'] #textTool,
+  body[data-sheet='more'] #moreSheet {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: min(92vw, 520px);
+    padding: 18px;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
   }
 }
 
@@ -121,12 +399,25 @@
     gap: 20px;
     padding: 24px 32px;
     grid-template-columns: 380px minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     grid-template-areas:
+      'chip editor'
       'assets editor'
       'pdf editor'
       'actions editor';
     align-items: start;
+  }
+  .app[data-has-pdf='false'] {
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'assets editor'
+      'pdf editor';
+  }
+  .app[data-has-pdf='true'][data-setup='closed'] {
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'chip editor'
+      'actions editor';
   }
   /* On desktop the editor is always visible, showing an empty state first. */
   .app[data-has-pdf='false'] .panel-editor {
@@ -141,13 +432,29 @@
     flex: none;
   }
   .panel-actions {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .panel-actions .quick-bar {
+    order: -1;
+    grid-column: auto;
+    grid-row: auto;
+    max-width: none;
   }
   .panel-actions .selection-tools {
-    margin-bottom: 16px;
+    grid-column: auto;
+    grid-row: auto;
+    margin-bottom: 6px;
+  }
+  .panel-actions #download,
+  .panel-actions .count {
+    grid-column: auto;
+    grid-row: auto;
   }
   .panel-actions .count {
-    margin-top: 10px;
+    margin-top: 0;
   }
   .empty-state {
     min-height: 50vh;
@@ -158,236 +465,5 @@
 @media (min-width: 1440px) {
   .app {
     grid-template-columns: 420px minmax(0, 1fr);
-  }
-}
-
-/* Phones: the pinned tools scroll instead of covering the page, and the long hint is hidden. */
-@media (max-width: 639px) {
-  .panel-actions {
-    max-height: 55vh;
-    overflow-y: auto;
-  }
-  #batchHint {
-    display: none;
-  }
-}
-
-/* ---------- phone layout: page first, tools at the thumb, sheets for the rest ---------- */
-@media (max-width: 639px) {
-  .app {
-    grid-template-areas:
-      'chip'
-      'assets'
-      'pdf'
-      'editor'
-      'actions';
-  }
-
-  /* Setup (signature, initials, PDF) folds into one chip once a PDF is open. */
-  .setup-chip {
-    grid-area: chip;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: var(--tap);
-    padding: 0 14px;
-    font: inherit;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-  .app[data-has-pdf='true'] .setup-chip {
-    display: flex;
-  }
-  .setup-name {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
-  }
-  .setup-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex: none;
-    color: var(--muted);
-  }
-  .setup-action svg {
-    width: 18px;
-    height: 18px;
-    transition: transform 0.15s;
-  }
-  .app[data-setup='open'] .setup-action svg {
-    transform: rotate(180deg);
-  }
-  .app[data-has-pdf='true'][data-setup='closed'] .panel-assets,
-  .app[data-has-pdf='true'][data-setup='closed'] .panel-pdf {
-    display: none;
-  }
-
-  /* The step heading stays for screen readers; the page gets the room. */
-  .panel-editor > h2 {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-  .panel-editor {
-    padding-top: 8px;
-  }
-  .add-buttons {
-    display: none;
-  }
-  .editor-bar {
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px;
-    margin: 0 0 8px;
-  }
-  /* Undo/Redo and the pager share one row at 375 px. */
-  .history-buttons {
-    gap: 4px;
-  }
-  .history-buttons .btn {
-    padding-inline: 10px;
-  }
-  .pager {
-    flex: 1 1 150px;
-    gap: 6px;
-  }
-  #pageLabel {
-    font-size: 0.875rem;
-  }
-
-  /* Bottom toolbar. */
-  .mobile-bar {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
-    margin-bottom: 10px;
-  }
-  .mb {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    min-height: 56px;
-    padding: 4px 2px;
-    font: inherit;
-    font-size: 0.8125rem;
-    color: var(--text);
-    background: transparent;
-    border: 0;
-    border-radius: var(--radius-sm);
-  }
-  .mb svg {
-    width: 24px;
-    height: 24px;
-  }
-  .mb[aria-expanded='true'] {
-    background: var(--bg-accent, var(--border));
-    outline: 2px solid var(--accent);
-  }
-
-  /* Selected item: one short row; the rest opens under Fine-tune. */
-  .panel-actions .selection-name {
-    display: block;
-    margin: 0;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .sel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .sel-head-actions {
-    display: flex;
-    flex: none;
-    gap: 6px;
-  }
-  #fineTune svg {
-    width: 16px;
-    height: 16px;
-    vertical-align: -3px;
-    transition: transform 0.15s;
-  }
-  #fineTune[aria-expanded='true'] svg {
-    transform: rotate(180deg);
-  }
-  .selection-tools .tool-grid {
-    display: none;
-  }
-  .selection-tools[data-open] .tool-grid {
-    display: flex;
-  }
-  .sel-actions .btn-danger {
-    display: none;
-  }
-  .panel-actions .selection-tools {
-    grid-template-columns: minmax(0, 1fr);
-    margin-bottom: 8px;
-  }
-  .sel-head {
-    min-width: 0;
-  }
-
-  /* Date, free text and More open as sheets over a dimmed page. */
-  .date-tool,
-  .more-sheet {
-    display: none;
-  }
-  body[data-sheet='date'] #dateTool,
-  body[data-sheet='text'] #textTool,
-  body[data-sheet='more'] #moreSheet {
-    display: block;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 30;
-    max-height: 85vh;
-    overflow-y: auto;
-    margin: 0;
-    padding: 14px max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
-    background: var(--surface);
-    border: 0;
-    border-top: 1px solid var(--border);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    box-shadow: 0 -8px 28px rgba(20, 24, 33, 0.28);
-  }
-  .sheet-close {
-    display: inline-flex;
-  }
-  .sheet-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 25;
-    background: rgba(10, 12, 16, 0.45);
-  }
-  .sheet-backdrop[hidden] {
-    display: none;
-  }
-  .more-body {
-    display: grid;
-    gap: 12px;
-  }
-  .more-body .check,
-  .more-body #batch {
-    margin: 0;
-  }
-  .more-body #batchHint {
-    display: block;
-    margin: 0;
   }
 }

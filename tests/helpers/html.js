@@ -88,12 +88,27 @@ export function cssRules(source) {
   return rules;
 }
 
-// Does a rule apply on a 375 px wide phone?
-export function appliesOnPhone(media) {
+// Does a rule apply at this viewport width (px)?
+export function appliesAt(media, width) {
   if (!media) return true;
   const min = /min-width:\s*(\d+)px/.exec(media);
   const max = /max-width:\s*(\d+)px/.exec(media);
-  return (!min || Number(min[1]) <= 375) && (!max || Number(max[1]) >= 375);
+  return (!min || Number(min[1]) <= width) && (!max || Number(max[1]) >= width);
+}
+
+// Does a rule apply on a 375 px wide phone?
+export const appliesOnPhone = (media) => appliesAt(media, 375);
+
+// The value a node ends up with for `prop` at `width`: the last matching rule
+// wins (specificity is ignored, which is enough for this project's flat CSS).
+export function effective(rules, node, width, prop) {
+  let value = null;
+  for (const r of rules) {
+    if (!appliesAt(r.media, width) || !matches(r.selector, node)) continue;
+    const v = declaration(r.body, prop);
+    if (v !== null) value = v;
+  }
+  return value;
 }
 
 function lastCompound(selector) {

@@ -4,22 +4,25 @@
 // backdrop (z-index 25) sat on top of the sheet (z-index 30 inside the panel).
 // Taps hit the backdrop instead of the buttons.
 import { describe, it, expect } from 'vitest';
-import { read, parseHtml, byId, ancestors, all, classes, cssRules, appliesOnPhone, matches, declaration, createsStackingContext } from './helpers/html.js';
+import { read, parseHtml, byId, ancestors, all, classes, cssRules, appliesOnPhone, appliesAt, matches, declaration, createsStackingContext } from './helpers/html.js';
 
 const page = parseHtml(read('index.html'));
-const rules = [...cssRules(read('src/styles/components.css')), ...cssRules(read('src/styles/layout.css'))].filter((r) => appliesOnPhone(r.media));
+const allRules = [...cssRules(read('src/styles/components.css')), ...cssRules(read('src/styles/layout.css'))];
+const rules = allRules.filter((r) => appliesOnPhone(r.media));
 const SHEETS = ['moreSheet', 'dateTool', 'textTool'];
+const WIDTHS = [375, 800, 1280]; // phone, tablet, desktop
 
-const stackingAncestors = (node) =>
-  ancestors(node).filter((a) => rules.some((r) => matches(r.selector, a) && createsStackingContext(r.body)));
+// The sticky editor on desktop is a stacking context too, so check every size.
+const stackingAncestors = (node, width = 375) =>
+  ancestors(node).filter((a) => allRules.some((r) => appliesAt(r.media, width) && matches(r.selector, a) && createsStackingContext(r.body)));
 
 describe('bottom sheets on phones', () => {
   it('finds the sheets and the backdrop in the page', () => {
     for (const id of [...SHEETS, 'sheetBackdrop']) expect(byId(page, id), id).not.toBeNull();
   });
 
-  it.each(SHEETS)('%s is not inside an element that creates a stacking context', (id) => {
-    const culprits = stackingAncestors(byId(page, id)).map((a) => `${a.tag}.${classes(a).join('.')}`);
+  it.each(SHEETS.flatMap((id) => WIDTHS.map((w) => [id, w])))('%s is not inside an element that creates a stacking context at %ipx', (id, width) => {
+    const culprits = stackingAncestors(byId(page, id), width).map((a) => `${a.tag}.${classes(a).join('.')}`);
     expect(culprits).toEqual([]);
   });
 

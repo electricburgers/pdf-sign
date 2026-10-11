@@ -36,7 +36,7 @@
       </button>
     </header>
 
-    <div class="app" id="app" data-has-pdf="false" data-setup="open">
+    <div class="app" id="app" data-has-pdf="false" data-setup="open" data-bar="vertical">
       <button class="setup-chip" type="button" id="setupToggle" aria-expanded="true">
         <span class="setup-name" id="setupName">Setup</span>
         <span class="setup-action">Setup <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -103,6 +103,10 @@
               <button class="btn" type="button" data-stamp="check" aria-label="Add checkmark">Add ✓</button>
               <button class="btn" type="button" data-stamp="cross" aria-label="Add X mark">Add ✗</button>
             </div>
+            <button class="btn btn-small bar-toggle" type="button" id="barToggle" aria-pressed="true" aria-label="Show the bar at the side of the page">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 4v16" stroke="currentColor" stroke-width="1.8"/></svg>
+              Side bar
+            </button>
             <div class="history-buttons" role="group" aria-label="History">
               <button class="btn" type="button" id="undo" disabled>Undo</button>
               <button class="btn" type="button" id="redo" disabled>Redo</button>
@@ -117,44 +121,12 @@
               </button>
             </nav>
           </div>
-          <div class="date-tool" id="dateTool" role="group" aria-labelledby="dateTitle">
-            <div class="sheet-head"><h3 id="dateTitle">Date</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
-            <div class="date-fields">
-              <label class="field">
-                <span>Pick a date</span>
-                <input type="date" id="datePicker" />
-              </label>
-              <label class="field">
-                <span>Text to add</span>
-                <input type="text" id="dateText" maxlength="40" autocomplete="off" />
-              </label>
-              <label class="field">
-                <span>Font</span>
-                <select id="dateFont"></select>
-              </label>
-              <button class="btn" type="button" id="addDate">Add date</button>
-            </div>
-            <p class="date-preview" id="datePreview" aria-hidden="true"></p>
-          </div>
-          <div class="date-tool" id="textTool" role="group" aria-labelledby="textTitle">
-            <div class="sheet-head"><h3 id="textTitle">Free text</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
-            <div class="date-fields text-fields">
-              <label class="field">
-                <span>Text to add</span>
-                <input type="text" id="freeText" autocomplete="off" />
-              </label>
-              <label class="field">
-                <span>Font</span>
-                <select id="textFont"></select>
-              </label>
-              <button class="btn" type="button" id="addText">Add text</button>
-            </div>
-            <p class="date-preview" id="textPreview" aria-hidden="true"></p>
-          </div>
-          <div class="desk" id="stage">
-            <div class="page" id="page">
-              <canvas id="pageCanvas" role="img" aria-label="PDF page preview"></canvas>
-              <div class="overlay" id="overlay"></div>
+          <div class="stage-row" id="stageRow">
+            <div class="desk" id="stage">
+              <div class="page" id="page">
+                <canvas id="pageCanvas" role="img" aria-label="PDF page preview"></canvas>
+                <div class="overlay" id="overlay"></div>
+              </div>
             </div>
           </div>
           <p class="sr-only" id="placementHelp">Arrow keys move it. Hold Shift to move farther. Plus and minus change the size. Delete removes it.</p>
@@ -199,12 +171,12 @@
             </div>
           </div>
         </div>
-        <nav class="mobile-bar" aria-label="Add to page">
-          <button class="mb" type="button" data-mb="signature"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 16c3-1 4-8 6-8s1 7 3 7 3-5 5-5 1 3 4 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg><span>Sign</span></button>
-          <button class="mb" type="button" data-mb="initials"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 18l4-11 4 11M6.6 14h4.8M16 11c1-1 4-1 4 1.5S16 14 16 16.5c0 1.5 3 1.5 4 .5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Initials</span></button>
-          <button class="mb" type="button" data-mb="date" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Date</span></button>
-          <button class="mb" type="button" data-mb="text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7V5h14v2M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Text</span></button>
-          <button class="mb" type="button" data-mb="more" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg><span>More</span></button>
+        <nav class="quick-bar" aria-label="Add to page">
+          <button class="qb" type="button" data-qb="signature"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 16c3-1 4-8 6-8s1 7 3 7 3-5 5-5 1 3 4 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5"/></svg><span>Sign</span></button>
+          <button class="qb" type="button" data-qb="initials"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 18l4-11 4 11M6.6 14h4.8M16 11c1-1 4-1 4 1.5S16 14 16 16.5c0 1.5 3 1.5 4 .5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Initials</span></button>
+          <button class="qb" type="button" data-qb="date" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Date</span></button>
+          <button class="qb" type="button" data-qb="text" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 7V5h14v2M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Text</span></button>
+          <button class="qb" type="button" data-qb="more" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg><span>More</span></button>
         </nav>
         <label class="check">
           <input type="checkbox" id="flatten" />
@@ -220,6 +192,52 @@
 
 
     <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+    <div class="date-tool" id="dateTool" role="group" aria-labelledby="dateTitle">
+      <div class="sheet-head"><h3 id="dateTitle">Date</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
+      <p class="date-paper" id="datePreview" aria-label="Preview"></p>
+      <div class="date-row">
+        <label class="field">
+          <span>Date</span>
+          <input type="date" id="datePicker" />
+        </label>
+        <button class="btn" type="button" id="dateToday">Today</button>
+      </div>
+      <fieldset class="chip-group">
+        <legend>Format</legend>
+        <div class="chips">
+          <label class="chip-option"><input type="radio" name="dateFormat" value="long" checked><span></span></label>
+          <label class="chip-option"><input type="radio" name="dateFormat" value="medium"><span></span></label>
+          <label class="chip-option"><input type="radio" name="dateFormat" value="numeric"><span></span></label>
+          <label class="chip-option"><input type="radio" name="dateFormat" value="iso"><span></span></label>
+          <label class="chip-option"><input type="radio" name="dateFormat" value="dmy"><span></span></label>
+        </div>
+      </fieldset>
+      <fieldset class="chip-group">
+        <legend>Font</legend>
+        <div class="chips">
+          <label class="chip-option"><input type="radio" name="dateFont" value="verdana" checked><span>Verdana</span></label>
+          <label class="chip-option"><input type="radio" name="dateFont" value="times"><span>Times</span></label>
+          <label class="chip-option"><input type="radio" name="dateFont" value="open-sans"><span>Open Sans</span></label>
+          <label class="chip-option"><input type="radio" name="dateFont" value="noto-serif"><span>Noto Serif</span></label>
+        </div>
+      </fieldset>
+      <button class="btn btn-primary btn-block" type="button" id="addDate">Add date</button>
+    </div>
+    <div class="date-tool" id="textTool" role="group" aria-labelledby="textTitle">
+      <div class="sheet-head"><h3 id="textTitle">Free text</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
+      <div class="date-fields text-fields">
+        <label class="field">
+          <span>Text to add</span>
+          <input type="text" id="freeText" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Font</span>
+          <select id="textFont"></select>
+        </label>
+        <button class="btn" type="button" id="addText">Add text</button>
+      </div>
+      <p class="date-preview" id="textPreview" aria-hidden="true"></p>
+    </div>
     <div class="more-sheet" id="moreSheet" aria-label="More options">
       <div class="sheet-head"><h3>More</h3><button class="btn btn-small sheet-close" type="button" data-sheet-close>Done</button></div>
       <div class="more-body" id="moreBody"></div>

@@ -3,6 +3,20 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.8.0] - 2026-10-11
+
+### Added
+- The quick bar (Sign, Initials, Date, Text, More), the Setup chip and the Fine-tune row now work on tablets and desktops too, not just phones. The old Add buttons, the inline Date and Free text boxes and the footer clutter are gone from the page.
+- Side bar on tablets and desktops: the quick bar stands in a column beside the page by default. A "Side bar" toggle next to Undo switches it back to a horizontal bar under the page, and the choice is remembered. Phones always keep the bottom bar.
+- Redesigned Date dialog: a large live preview, a date field with a Today button, format chips that show your date written five ways (long, medium, numbers, year first, day first), and font chips set in their own fonts. It remembers your last format and font. The second text box that repeated the date is gone; Free text covers anything custom.
+- 62 new tests (258 in total): bar and sheet layout at phone, tablet and desktop widths, the side bar and its toggle, the date dialog and date formats, and a check that `main.js` only imports things that exist.
+
+### Changed
+- On tablets and desktops the sidebar folds to just the bar and the page once a PDF is open, and Date, Text and More open as centered cards instead of bottom sheets.
+
+### Fixed
+- On tablets and desktops the Date and Free text options appeared under the darkened page and couldn't be tapped. Their panels sat inside the sticky page area, which hid them behind the dimming layer. All three sheets now sit at the top level of the page. A new test checks this at every screen size.
+
 ## [1.7.0] - 2026-10-11
 
 ### Added
