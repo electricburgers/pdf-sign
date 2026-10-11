@@ -35,6 +35,6 @@ initAssetsPanel();
 // Offline support: the service worker saves the app so it opens without the server.
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   });
 }

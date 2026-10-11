@@ -1,7 +1,9 @@
 // Service worker template: vite.config.js fills in the version and file list.
-// Plain script (not bundled) so it can be served as /sw.js.
+// Plain script (not bundled) so it can be served as sw.js. Every address is
+// worked out from the worker's scope, so it runs at a site root or in a folder.
 const CACHE = 'pdfsign-__CACHE_VERSION__';
-const PRECACHE = __PRECACHE__;
+const SCOPE = self.registration.scope; // e.g. https://example.com/ or https://user.github.io/repo/
+const PRECACHE = __PRECACHE__.map((file) => new URL(file, SCOPE).href);
 const NAVIGATION_TIMEOUT_MS = 3000;
 
 self.addEventListener('install', (event) => {
@@ -28,13 +30,13 @@ function networkFirst(request) {
   const network = fetch(request).then((response) => {
     if (response.ok) {
       const copy = response.clone();
-      caches.open(CACHE).then((cache) => cache.put('/', copy));
+      caches.open(CACHE).then((cache) => cache.put(SCOPE, copy));
     }
     return response;
   });
   const timeout = new Promise((_, reject) => setTimeout(reject, NAVIGATION_TIMEOUT_MS));
   return Promise.race([network, timeout]).catch(() =>
-    caches.match('/').then((cached) => cached || network),
+    caches.match(SCOPE).then((cached) => cached || network),
   );
 }
 
@@ -56,6 +58,6 @@ function cacheFirst(request) {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname === '/healthz') return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname === new URL('healthz', SCOPE).pathname) return;
   event.respondWith(request.mode === 'navigate' ? networkFirst(request) : cacheFirst(request));
 });

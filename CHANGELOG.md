@@ -3,6 +3,17 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.9.0] - 2026-10-11
+
+### Added
+- GitHub Pages hosting. A workflow (`.github/workflows/pages.yml`) runs the tests, builds and publishes on every push to `main`. The same build works as a project site (`https://<user>.github.io/<repo>/`) and on a custom domain; the README explains the one-time setup for both.
+- The Content-Security-Policy is now also added to the page as a meta tag at build time, for hosts like Pages that can't send headers. A test keeps it in step with `nginx.conf`.
+- 56 new tests (316 in total): 38 for tablet and desktop layout differences (grid, panel states, sticky editor, tools panel, side bar, sheets, preview sizing), 3 for the service worker in a sub-folder, plus checks for the Pages setup and the settings gear.
+
+### Changed
+- The build uses relative URLs. The web app manifest, the service worker's file list and its registration are relative too, so the app works at the site root or in a sub-folder. Docker and nginx hosting are unchanged.
+- New settings gear: a clean outlined eight-tooth gear with a round hub, replacing the uneven one.
+
 ## [1.8.0] - 2026-10-11
 
 ### Added

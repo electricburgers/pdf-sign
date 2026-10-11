@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 // Runs src/sw.template.js against a tiny fake service-worker environment.
-function setup({ online, store = new Map(), version = 'test', files = ['/', '/assets/app.js'] }) {
+function setup({ online, store = new Map(), version = 'test', files = ['./', 'assets/app.js'], scope = 'http://app.test/' }) {
   // `store` (cacheName -> Map(url -> body)) can be shared to model a browser keeping caches between versions.
   const listeners = {};
   const key = (r) => new URL(typeof r === 'string' ? r : r.url, 'http://app.test').pathname;
@@ -29,7 +29,8 @@ function setup({ online, store = new Map(), version = 'test', files = ['/', '/as
     return { ok: online.value !== 'bad', clone() { return this; }, text: async () => `live:${key(r)}` };
   };
   const self = {
-    location: { origin: 'http://app.test' },
+    location: { origin: new URL(scope).origin },
+    registration: { scope },
     addEventListener: (type, fn) => (listeners[type] = fn),
     skipWaiting: () => {},
     clients: { claim: async () => {} },
@@ -75,12 +76,12 @@ describe('service worker', () => {
   it('upgrades cleanly: the new version replaces the old caches and their files', async () => {
     const store = new Map();
     const online = { value: true };
-    const v1 = setup({ online, store, version: 'v1', files: ['/', '/assets/old.js'] });
+    const v1 = setup({ online, store, version: 'v1', files: ['./', 'assets/old.js'] });
     await v1.run('install', {});
     await v1.run('activate', {});
     expect([...store.keys()]).toEqual(['pdfsign-v1']);
 
-    const v2 = setup({ online, store, version: 'v2', files: ['/', '/assets/new.js'] });
+    const v2 = setup({ online, store, version: 'v2', files: ['./', 'assets/new.js'] });
     await v2.run('install', {});
     expect([...store.keys()].sort()).toEqual(['pdfsign-v1', 'pdfsign-v2']); // both exist until activation
     await v2.run('activate', {});
@@ -149,5 +150,42 @@ describe('service worker', () => {
     await new Promise((r) => setTimeout(r, 0));
     online.value = false;
     await expect(Promise.race([sw.run('fetch', { request }), new Promise((_, rej) => setTimeout(() => rej(new Error('network down')), 50))])).rejects.toThrow();
+  });
+
+  describe('in a sub-folder (a GitHub Pages project site)', () => {
+    const scope = 'http://app.test/repo/';
+
+    it('precaches and serves the page and files under the folder when the server is down', async () => {
+      const online = { value: true };
+      const sw = setup({ online, scope });
+      await sw.run('install', {});
+      online.value = false;
+      const page = await sw.run('fetch', { request: { url: scope, method: 'GET', mode: 'navigate' } });
+      expect(await page.text()).toBe('saved:/repo/');
+      const asset = await sw.run('fetch', { request: { url: `${scope}assets/app.js`, method: 'GET', mode: 'no-cors' } });
+      expect(await asset.text()).toBe('saved:/repo/assets/app.js');
+    });
+
+    it('leaves the health check under the folder alone', async () => {
+      const sw = setup({ online: { value: true }, scope });
+      await sw.run('install', {});
+      let handled = false;
+      await Promise.race([
+        sw.run('fetch', { request: { url: `${scope}healthz`, method: 'GET', mode: 'no-cors' } }).then(() => (handled = true)),
+        new Promise((r) => setTimeout(r, 20)),
+      ]);
+      expect(handled).toBe(false);
+    });
+
+    it('still ignores other sites', async () => {
+      const sw = setup({ online: { value: true }, scope });
+      await sw.run('install', {});
+      let handled = false;
+      await Promise.race([
+        sw.run('fetch', { request: { url: 'https://other.example/repo/assets/app.js', method: 'GET', mode: 'no-cors' } }).then(() => (handled = true)),
+        new Promise((r) => setTimeout(r, 20)),
+      ]);
+      expect(handled).toBe(false);
+    });
   });
 });

@@ -12,8 +12,8 @@ const png = (name) => {
 const pngIcons = manifest.icons.filter((i) => i.type === 'image/png');
 
 describe('web app manifest', () => {
-  it('opens as its own app from the site root', () => {
-    expect(manifest).toMatchObject({ display: 'standalone', start_url: '/', scope: '/' });
+  it('opens as its own app from wherever it is hosted (relative start_url and scope)', () => {
+    expect(manifest).toMatchObject({ display: 'standalone', start_url: './', scope: './' });
     expect(manifest.name).toBeTruthy();
     expect(manifest.short_name.length).toBeLessThanOrEqual(12);
   });

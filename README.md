@@ -1,6 +1,6 @@
 # PDF Sign
 
-**Version 1.8.0 — 2026-10-11 06:38 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
+**Version 1.9.0 — 2026-10-11 07:04 (UTC-4)** · see [CHANGELOG.md](CHANGELOG.md)
 
 A small self-hosted web app that does one thing: put your **signature** and **initials** images on a PDF.
 
@@ -88,3 +88,21 @@ src/
     layout.css       mobile / tablet / desktop grids
 tests/               105 vitest tests
 ```
+
+## Host it on GitHub Pages
+
+The app is a static site, so Pages can serve it. The included workflow
+(`.github/workflows/pages.yml`) runs the tests, builds, and publishes on every
+push to `main`. The build uses relative URLs, so the same files work in both setups below.
+
+1. In the repository, open **Settings > Pages** and set **Source** to **GitHub Actions**.
+2. Push to `main` (or run the workflow by hand from the **Actions** tab).
+
+**As a project site.** The app appears at `https://<user>.github.io/<repo>/`. Nothing else to configure.
+
+**On a custom domain.** In **Settings > Pages > Custom domain**, enter your domain (for example `sign.example.com`) and tick **Enforce HTTPS**.
+At your DNS provider, add a `CNAME` record from that name to `<user>.github.io` (for a bare domain such as `example.com`, add the four `A` records GitHub lists instead).
+The app then lives at the root of your domain.
+
+Pages serves HTTPS, which iPhone needs to install the app and keep it working offline. Pages can't set response headers, so the build adds the Content-Security-Policy as a meta tag instead.
+Public repositories get Pages free; private ones need a paid GitHub plan.
