@@ -24,7 +24,8 @@ export const MAX_DATE_CHARS = 40;
 export const MAX_FREE_TEXT_CHARS = 120;
 
 export function cleanDateText(text, max = MAX_DATE_CHARS) {
-  return String(text || '').replace(/\s+/g, ' ').trim().slice(0, max);
+  // Cut by character (not UTF-16 unit) so an emoji is never split, then trim again.
+  return [...String(text || '').replace(/\s+/g, ' ').trim()].slice(0, max).join('').trim();
 }
 
 export function defaultDateText(now = new Date(), locale) {

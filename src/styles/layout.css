@@ -172,3 +172,14 @@
     margin-left: 440px;
   }
 }
+
+/* Phones: the pinned tools scroll instead of covering the page, and the long hint is hidden. */
+@media (max-width: 639px) {
+  .panel-actions {
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+  #batchHint {
+    display: none;
+  }
+}

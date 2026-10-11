@@ -1,7 +1,6 @@
 // Step 2: choose a PDF (tap or drag-and-drop), validate it and load it.
 import { isPdfFile, isPdfBytes, checkFileSize } from '../lib/validate.js';
-import { state, placements, bus, select } from '../app/state.js';
-import { loadDocument } from './pdf-engine.js';
+import { state, placements, history, bus, select } from '../app/state.js';
 import { toast } from './announce.js';
 import { $ } from './dom.js';
 
@@ -16,6 +15,8 @@ async function open(file) {
   if (!isPdfBytes(bytes)) return toast("That file isn't a PDF.", { error: true });
 
   try {
+    // pdf.js is loaded on first use so the page itself starts faster.
+    const { loadDocument } = await import('./pdf-engine.js');
     const { doc, aspects } = await loadDocument(bytes);
     if (state.doc) state.doc.destroy();
     Object.assign(state, {
@@ -27,6 +28,7 @@ async function open(file) {
       pageAspects: aspects,
     });
     placements.replaceAll([]);
+    history.clear();
     select(null);
     $('#pdfLabel').textContent = `${state.fileName} (tap to change)`;
     $('#app').dataset.hasPdf = 'true';

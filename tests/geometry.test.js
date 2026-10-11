@@ -112,3 +112,27 @@ describe('clampRect', () => {
     });
   });
 });
+
+describe('placementToDrawParams with a user rotation', () => {
+  const rect = { x: 0.4, y: 0.5, width: 0.2, height: 0.1 };
+  const centreOf = ({ x, y, width, height, rotate }) => {
+    const a = (rotate * Math.PI) / 180;
+    const [hx, hy] = [width / 2, height / 2];
+    return { x: x + hx * Math.cos(a) - hy * Math.sin(a), y: y + hx * Math.sin(a) + hy * Math.cos(a) };
+  };
+
+  it('is unchanged when there is no tilt', () => {
+    expect(placementToDrawParams(rect, LETTER, 0, 0)).toEqual(placementToDrawParams(rect, LETTER, 0));
+  });
+
+  it.each([0, 90, 180, 270])('keeps the centre in place on a page rotated %i degrees', (pageRotation) => {
+    const upright = placementToDrawParams(rect, LETTER, pageRotation);
+    const tilted = placementToDrawParams(rect, LETTER, pageRotation, 30);
+    const a = centreOf(upright);
+    const b = centreOf(tilted);
+    expect(b.x).toBeCloseTo(a.x, 6);
+    expect(b.y).toBeCloseTo(a.y, 6);
+    expect(tilted.rotate).toBe(upright.rotate - 30);
+    expect(tilted.width).toBe(upright.width);
+  });
+});

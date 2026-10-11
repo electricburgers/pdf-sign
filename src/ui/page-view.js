@@ -3,7 +3,6 @@ import { displaySize, fitScale } from '../lib/geometry.js';
 import { layoutFor } from '../lib/layout.js';
 import { debounce } from '../lib/schedule.js';
 import { state, bus, select } from '../app/state.js';
-import { renderPage, pageSize } from './pdf-engine.js';
 import { toast } from './announce.js';
 import { $ } from './dom.js';
 
@@ -24,6 +23,7 @@ async function show() {
   const layout = layoutFor(window.innerWidth);
 
   try {
+    const { renderPage, pageSize } = await import('./pdf-engine.js');
     const size = await pageSize(state.doc, index);
     const box = { x: 0, y: 0, width: size.width, height: size.height };
     let cssScale = fitScale(box, 0, available, MAX_SCALE[layout]);

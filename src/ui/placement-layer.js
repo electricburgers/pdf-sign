@@ -4,7 +4,7 @@
 // (O(1)), and pointer moves are coalesced to one update per animation frame.
 import { keyToAction } from '../lib/keyboard.js';
 import { rafThrottle } from '../lib/schedule.js';
-import { state, placements, bus, select, KIND_LABEL } from '../app/state.js';
+import { state, placements, history, bus, select, effectiveImage, KIND_LABEL } from '../app/state.js';
 import { moveTo, moveBy, resizeTo, resizeBy, remove } from '../app/actions.js';
 import { $ } from './dom.js';
 
@@ -15,6 +15,7 @@ function styleElement(el, p) {
   el.style.top = `${p.y * 100}%`;
   el.style.width = `${p.width * 100}%`;
   el.style.height = `${p.height * 100}%`;
+  el.style.transform = p.rotation ? `rotate(${p.rotation}deg)` : '';
 }
 
 function createElement(p) {
@@ -39,7 +40,7 @@ function sync(p) {
     $('#overlay').appendChild(el);
     elements.set(p.id, el);
   }
-  const asset = p.image || state.assets[p.kind];
+  const asset = effectiveImage(p);
   const img = el.firstChild;
   if (asset && img.getAttribute('src') !== asset.dataUrl) img.src = asset.dataUrl;
   const what = p.text ? `${KIND_LABEL[p.kind]} "${p.text}"` : KIND_LABEL[p.kind];
@@ -70,6 +71,7 @@ function onPointerDown(e) {
   el.focus({ preventScroll: true });
   el.setPointerCapture(e.pointerId);
 
+  history.record(); // one undo step per drag
   const resizing = e.target.classList.contains('handle');
   const sx = e.clientX;
   const sy = e.clientY;
@@ -89,6 +91,8 @@ function onPointerDown(e) {
     const dy = (ev.clientY - sy) / H;
     if (resizing) resizeTo(id, start.width + dx, start);
     else moveTo(id, { x: start.x + dx, y: start.y + dy });
+    const end = placements.get(id);
+    if (end && end.x === start.x && end.y === start.y && end.width === start.width) history.drop(); // a tap, not a drag
     el.removeEventListener('pointermove', onMove);
     el.removeEventListener('pointerup', onUp);
     el.removeEventListener('pointercancel', onUp);

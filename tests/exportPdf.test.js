@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { PDFDocument, PDFName, PDFDict, degrees } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFDict, degrees, decodePDFRawStream } from 'pdf-lib';
 import { signPdf } from '../src/lib/exportPdf.js';
 
 const png = new Uint8Array(readFileSync(new URL('./fixtures/sig.png', import.meta.url)));
@@ -61,5 +61,46 @@ describe('signPdf', () => {
   it('places the image on rotated pages', async () => {
     const out = await signPdf(threePages, [sig(2)], assets);
     expect(await imageRefs(out, 2)).toHaveLength(1);
+  });
+});
+
+describe('signPdf options', () => {
+  it('draws a tilted item', async () => {
+    const out = await signPdf(threePages, [sig(0, { rotation: 45 })], assets);
+    expect(await imageRefs(out, 0)).toHaveLength(1);
+  });
+
+  it('flattens form fields when asked', async () => {
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([612, 792]);
+    doc.getForm().createTextField('name').addToPage(page, { x: 50, y: 700, width: 200, height: 20 });
+    const withForm = await doc.save();
+    expect((await PDFDocument.load(await signPdf(withForm, [sig(0)], assets))).getForm().getFields()).toHaveLength(1);
+    const flat = await signPdf(withForm, [sig(0)], assets, { flatten: true });
+    expect((await PDFDocument.load(flat)).getForm().getFields()).toHaveLength(0);
+  });
+
+  it('skips items on pages the file does not have when asked to collect them', async () => {
+    const skipped = [];
+    const out = await signPdf(threePages, [sig(0), sig(7)], assets, { skipped });
+    expect(skipped).toHaveLength(1);
+    expect(await imageRefs(out, 0)).toHaveLength(1);
+    await expect(signPdf(threePages, [sig(7)], assets)).rejects.toThrow(/page 8/);
+  });
+
+  it('refits the height to the page shape so the image is not stretched', async () => {
+    const doc = await PDFDocument.create();
+    doc.addPage([792, 612]); // landscape
+    const landscape = await doc.save();
+    const item = { ...sig(0, { x: 0.1, y: 0.1, width: 0.2, height: 0.5 }), imageAspect: 4 };
+    const out = await signPdf(landscape, [item], assets, { refit: true });
+    expect(out.length).toBeGreaterThan(0);
+    // width 0.2 * 792 = 158.4pt, so a 4:1 image must be ~39.6pt tall (not 0.5 * 612).
+    const page = (await PDFDocument.load(out)).getPage(0);
+    const contents = page.node.Contents();
+    const streams = typeof contents.asArray === 'function' ? contents.asArray().map((ref) => page.doc.context.lookup(ref)) : [contents];
+    const text = streams.map((st) => new TextDecoder('latin1').decode(decodePDFRawStream(st).decode())).join('\n');
+    const sizes = [...text.matchAll(/([\d.]+) 0 0 ([\d.]+) [\d.]+ [\d.]+ cm/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    expect(sizes.some(([w, h]) => Math.abs(w - 158.4) < 0.01 && Math.abs(h - 39.6) < 0.01)).toBe(true);
   });
 });

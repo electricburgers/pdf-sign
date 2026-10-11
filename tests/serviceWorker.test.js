@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 // Runs src/sw.template.js against a tiny fake service-worker environment.
-function setup({ online }) {
-  const store = new Map(); // cacheName -> Map(url -> body)
+function setup({ online, store = new Map(), version = 'test', files = ['/', '/assets/app.js'] }) {
+  // `store` (cacheName -> Map(url -> body)) can be shared to model a browser keeping caches between versions.
   const listeners = {};
   const key = (r) => new URL(typeof r === 'string' ? r : r.url, 'http://app.test').pathname;
   const caches = {
@@ -34,8 +34,8 @@ function setup({ online }) {
     clients: { claim: async () => {} },
   };
   const src = readFileSync(new URL('../src/sw.template.js', import.meta.url), 'utf8')
-    .replace('__CACHE_VERSION__', 'test')
-    .replace('__PRECACHE__', JSON.stringify(['/', '/assets/app.js']));
+    .replace('__CACHE_VERSION__', version)
+    .replace('__PRECACHE__', JSON.stringify(files));
   vm.runInNewContext(src, { self, caches, fetch, Request: class { constructor(url) { this.url = url; } }, URL, setTimeout, Promise });
   const run = (type, event) => new Promise((resolve) => {
     listeners[type]({ ...event, waitUntil: resolve, respondWith: resolve });
@@ -69,5 +69,47 @@ describe('service worker', () => {
     await sw.run('install', {});
     await sw.run('activate', {});
     expect([...sw.store.keys()]).toEqual(['pdfsign-test']);
+  });
+
+  it('upgrades cleanly: the new version replaces the old caches and their files', async () => {
+    const store = new Map();
+    const online = { value: true };
+    const v1 = setup({ online, store, version: 'v1', files: ['/', '/assets/old.js'] });
+    await v1.run('install', {});
+    await v1.run('activate', {});
+    expect([...store.keys()]).toEqual(['pdfsign-v1']);
+
+    const v2 = setup({ online, store, version: 'v2', files: ['/', '/assets/new.js'] });
+    await v2.run('install', {});
+    expect([...store.keys()].sort()).toEqual(['pdfsign-v1', 'pdfsign-v2']); // both exist until activation
+    await v2.run('activate', {});
+    expect([...store.keys()]).toEqual(['pdfsign-v2']);
+    expect([...store.get('pdfsign-v2').keys()]).toEqual(['/', '/assets/new.js']);
+  });
+
+  it('leaves unrelated caches from other apps alone', async () => {
+    const store = new Map([['someone-elses-cache', new Map()]]);
+    const sw = setup({ online: { value: true }, store });
+    await sw.run('install', {});
+    await sw.run('activate', {});
+    expect([...store.keys()].sort()).toEqual(['pdfsign-test', 'someone-elses-cache']);
+  });
+
+  it('never touches other origins, non-GET requests or /healthz', async () => {
+    const sw = setup({ online: { value: true } });
+    await sw.run('install', {});
+    const ignored = [
+      { url: 'https://cdn.example/x.js', method: 'GET', mode: 'no-cors' },
+      { url: 'http://app.test/', method: 'POST', mode: 'navigate' },
+      { url: 'http://app.test/healthz', method: 'GET', mode: 'no-cors' },
+    ];
+    for (const request of ignored) {
+      let handled = false;
+      await Promise.race([
+        sw.run('fetch', { request }).then(() => (handled = true)),
+        new Promise((r) => setTimeout(r, 20)),
+      ]);
+      expect(handled).toBe(false);
+    }
   });
 });

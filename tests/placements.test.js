@@ -21,7 +21,7 @@ describe('createPlacement', () => {
     expect(a.id).not.toBe(b.id);
   });
   it('rejects unknown kinds and negative page indexes', () => {
-    expect(() => createPlacement({ ...base, kind: 'stamp' })).toThrow();
+    expect(() => createPlacement({ ...base, kind: 'banana' })).toThrow();
     expect(() => createPlacement({ ...base, page: -1 })).toThrow();
   });
 });
@@ -126,5 +126,27 @@ describe('applyToAllPages', () => {
     // displayed width/height ratio must still be 2:1 on the landscape page
     expect((copy.width * landscape) / copy.height).toBeCloseTo(2);
     expect(copy.y + copy.height).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('stamps, rotation and color', () => {
+  const image = { dataUrl: 'data:image/png;base64,AA==', width: 10, height: 10 };
+  const tint = { dataUrl: 'data:image/png;base64,BB==', width: 10, height: 10 };
+
+  it('accepts the stamp kind', () => {
+    expect(createPlacement({ ...base, kind: 'stamp', image, text: 'Checkmark' }).kind).toBe('stamp');
+  });
+  it('keeps rotation, and color only together with its tinted image', () => {
+    const a = createPlacement({ ...base, rotation: 30, color: '#c0392b', tint });
+    expect(a).toMatchObject({ rotation: 30, color: '#c0392b', tint });
+    const b = createPlacement({ ...base, color: '#c0392b' });
+    expect(b.color).toBeUndefined();
+    expect(createPlacement(base).rotation).toBeUndefined();
+  });
+  it('copies rotation and color to every page', () => {
+    const p = createPlacement({ ...base, rotation: -45, color: '#111111', tint });
+    const all = applyToAllPages([p], p.id, 3);
+    expect(all).toHaveLength(3);
+    for (const copy of all.slice(1)) expect(copy).toMatchObject({ rotation: -45, color: '#111111', tint });
   });
 });

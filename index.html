@@ -98,6 +98,14 @@
               <button class="btn" type="button" id="addSignature">Add signature</button>
               <button class="btn" type="button" id="addInitials">Add initials</button>
             </div>
+            <div class="mark-buttons" role="group" aria-label="Add a mark">
+              <button class="btn" type="button" data-stamp="check" aria-label="Add checkmark">Add ✓</button>
+              <button class="btn" type="button" data-stamp="cross" aria-label="Add X mark">Add ✗</button>
+            </div>
+            <div class="history-buttons" role="group" aria-label="History">
+              <button class="btn" type="button" id="undo" disabled>Undo</button>
+              <button class="btn" type="button" id="redo" disabled>Redo</button>
+            </div>
             <nav class="pager" aria-label="Pages">
               <button class="btn btn-icon" type="button" id="prevPage" aria-label="Previous page">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -167,13 +175,31 @@
               <button class="btn btn-icon" type="button" id="shrink" aria-label="Make smaller"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
               <button class="btn btn-icon" type="button" id="grow" aria-label="Make larger"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h12M12 6v12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
             </div>
+            <div class="rotate" role="group" aria-label="Rotate">
+              <button class="btn btn-small" type="button" id="rotateLeft" aria-label="Rotate left 15 degrees">⟲ 15°</button>
+              <button class="btn btn-small" type="button" id="rotateRight" aria-label="Rotate right 15 degrees">⟳ 15°</button>
+              <button class="btn btn-small btn-quiet" type="button" id="rotateReset">Straighten</button>
+            </div>
+            <div class="colors" role="group" aria-label="Color">
+              <button class="btn btn-small" type="button" data-color="" aria-pressed="true">Original</button>
+              <button class="btn btn-small" type="button" data-color="#111111" aria-pressed="false"><span class="swatch" style="--swatch:#111111" aria-hidden="true"></span>Black</button>
+              <button class="btn btn-small" type="button" data-color="#1d4ed8" aria-pressed="false"><span class="swatch" style="--swatch:#1d4ed8" aria-hidden="true"></span>Blue</button>
+              <button class="btn btn-small" type="button" data-color="#c0392b" aria-pressed="false"><span class="swatch" style="--swatch:#c0392b" aria-hidden="true"></span>Red</button>
+            </div>
             <div class="sel-actions">
               <button class="btn btn-small" type="button" id="allPages">Copy to all pages</button>
               <button class="btn btn-small btn-danger" type="button" id="deleteSel">Delete</button>
             </div>
           </div>
         </div>
+        <label class="check">
+          <input type="checkbox" id="flatten" />
+          <span>Flatten form fields so they can't be edited afterwards</span>
+        </label>
         <button class="btn btn-primary btn-block" type="button" id="download" disabled>Download signed PDF</button>
+        <button class="btn btn-block" type="button" id="batch" disabled>Sign other PDFs the same way</button>
+        <input class="sr-only" type="file" id="batchInput" accept="application/pdf,.pdf" multiple tabindex="-1" aria-hidden="true" />
+        <p class="hint center" id="batchHint">Uses the same positions on each file. Items on pages a file doesn't have are skipped. Several files download as one ZIP.</p>
         <p class="count" id="count">Nothing placed yet</p>
       </section>
     </div>

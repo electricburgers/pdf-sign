@@ -8,6 +8,8 @@ import { initPlacementLayer } from './ui/placement-layer.js';
 import { initToolbar } from './ui/toolbar.js';
 import { initDateTool } from './ui/date-tool.js';
 import { initTextTool } from './ui/text-tool.js';
+import { initStampTool } from './ui/stamp-tool.js';
+import { initBatch } from './ui/batch.js';
 import { initDownload } from './ui/download.js';
 import { initAbout } from './ui/about.js';
 
@@ -19,6 +21,8 @@ initPageView();
 initPdfPicker();
 initDateTool();
 initTextTool();
+initStampTool();
+initBatch();
 initDownload();
 initAssetsPanel();
 

@@ -2,7 +2,7 @@
 // on-page preview and the downloaded PDF match.
 import { fontCss } from '../lib/dateText.js';
 
-export const FONT_PX = 128; // drawn large so the text stays sharp when the page is zoomed
+export const FONT_PX = 64; // ~400 dpi at 11 pt: sharp when zoomed, a quarter of the memory of 128 px
 const PAD = 0.12; // breathing room around the text, in em
 
 export async function renderText(text, fontId) {

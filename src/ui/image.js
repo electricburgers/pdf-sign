@@ -66,3 +66,25 @@ export function measureDataUrl(dataUrl) {
     img.src = dataUrl;
   });
 }
+
+// Signature photos can be far sharper than a PDF needs. Shrinks an image so its
+// longest side is at most `maxSide`, once per image (results are remembered).
+const shrunk = new Map();
+export async function downscaleImage(image, maxSide = 900) {
+  const longest = Math.max(image.width, image.height);
+  if (longest <= maxSide) return image;
+  const key = `${maxSide}:${image.dataUrl}`;
+  if (shrunk.has(key)) return shrunk.get(key);
+  const img = new Image();
+  img.src = image.dataUrl;
+  await img.decode();
+  const scale = maxSide / longest;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.width * scale));
+  canvas.height = Math.max(1, Math.round(image.height * scale));
+  canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+  const out = { dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height };
+  shrunk.clear(); // keep only the latest few, not every image ever exported
+  shrunk.set(key, out);
+  return out;
+}

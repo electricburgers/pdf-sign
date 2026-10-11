@@ -3,6 +3,22 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-10-10
+
+### Added
+- Checkmark and X stamps for ticking boxes on forms.
+- Color and rotation for anything you place: Original, Black, Blue or Red, and tilt in 15-degree steps with a Straighten button. Tilted items are saved to the PDF around their center.
+- Flatten option: bakes form fields into the page so they can't be edited after you download.
+- Undo and Redo (buttons, Ctrl/Cmd+Z, and Shift+Ctrl/Cmd+Z or Ctrl+Y). Drags and held-down arrow keys count as one step.
+- "Sign other PDFs the same way": choose several PDFs and they all get the same placements. Several files download as one ZIP. Items on pages a file doesn't have are skipped, and heights are adjusted for each file's page shape.
+- Tests for undo/redo, the ZIP writer, tilted placement, flattening, other-file signing, service worker upgrades and date and text edge cases.
+
+### Changed
+- The PDF viewer and the PDF writer now load only when needed. The first load is much smaller (the main script went from about 934 kB to 38 kB).
+- Typed dates and text are drawn at a quarter of the memory they used before, and signature images are shrunk to what a PDF needs before they are embedded, so downloads are smaller.
+- Free text is trimmed by whole characters, so an emoji at the limit is never cut in half.
+- On phones the pinned tools scroll instead of covering the page.
+
 ## [1.4.0] - 2026-10-10
 
 ### Added

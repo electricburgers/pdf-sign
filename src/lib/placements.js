@@ -2,10 +2,10 @@
 // independent of zoom level. List operations are immutable.
 import { clampRect } from './geometry.js';
 
-export const KINDS = ['signature', 'initials', 'date', 'text'];
+export const KINDS = ['signature', 'initials', 'date', 'text', 'stamp'];
 export const MIN_WIDTH = 0.03;
-const DEFAULT_WIDTH = { signature: 0.35, initials: 0.12 };
-const DEFAULT_Y = { signature: 0.78, initials: 0.88, date: 0.7, text: 0.6 };
+const DEFAULT_WIDTH = { signature: 0.35, initials: 0.12, stamp: 0.04 };
+const DEFAULT_Y = { signature: 0.78, initials: 0.88, date: 0.7, text: 0.6, stamp: 0.5 };
 
 let counter = 0;
 function newId() {
@@ -14,12 +14,16 @@ function newId() {
   return `p${Date.now().toString(36)}${counter}${rand}`;
 }
 
-// A date placement also carries its own rendered `image` ({ dataUrl, width,
-// height }) plus the `text` and `font` it was made from.
-export function createPlacement({ kind, page, x, y, width, height, text, font, image }) {
+// Dates, text and stamps also carry their own rendered `image` ({ dataUrl,
+// width, height }) plus the `text` and `font` it was made from. Any placement
+// can have a `rotation` (clockwise degrees) and a `color`; when a color is set,
+// `tint` holds the recolored copy of the image.
+export function createPlacement({ kind, page, x, y, width, height, text, font, image, rotation, color, tint }) {
   if (!KINDS.includes(kind)) throw new Error(`Unknown placement kind: ${kind}`);
   if (!Number.isInteger(page) || page < 0) throw new Error(`Invalid page index: ${page}`);
   const extra = image ? { text, font, image } : {};
+  if (rotation) extra.rotation = rotation;
+  if (color && tint) Object.assign(extra, { color, tint });
   return { id: newId(), kind, page, ...clampRect({ x, y, width, height }), ...extra };
 }
 

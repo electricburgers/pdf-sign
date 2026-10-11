@@ -1,11 +1,13 @@
 // Shared application state and a tiny event bus. Components read state and
 // listen for events; they never reach into each other's DOM.
 import { createPlacementStore } from '../lib/placementStore.js';
+import { createHistory } from '../lib/history.js';
 import { createAssetStore, safeLocalStorage } from '../lib/storage.js';
 
 export const storage = safeLocalStorage();
 export const assetStore = createAssetStore(storage);
 export const placements = createPlacementStore();
+export const history = createHistory(placements);
 
 export const state = {
   assets: { signature: null, initials: null }, // { dataUrl, width, height }
@@ -31,7 +33,13 @@ export const bus = {
   },
 };
 
-export const KIND_LABEL = { signature: 'Signature', initials: 'Initials', date: 'Date', text: 'Text' };
+export const KIND_LABEL = { signature: 'Signature', initials: 'Initials', date: 'Date', text: 'Text', stamp: 'Mark' };
+
+// The image to show and export for a placement: its recolored copy if it has
+// one, else its own rendered image, else the saved signature/initials.
+export function effectiveImage(p) {
+  return p.tint || p.image || state.assets[p.kind];
+}
 
 // Accepts a kind name or a placement (dates carry their own image).
 export function imageAspect(target) {

@@ -77,19 +77,29 @@ export function pdfPointToDisplay(px, py, { box, rotation, scale = 1 }) {
 // Returns pdf-lib drawImage options. The image is anchored at the display
 // bottom-left corner of the rect and rotated by the page rotation so it
 // appears upright in viewers that honor /Rotate.
-export function placementToDrawParams(rect, box, rotation) {
+//
+// `userRotation` is an extra clockwise tilt in degrees (as seen on screen)
+// applied around the item's centre. pdf-lib rotates around the lower-left
+// corner, so the corner is moved to keep the centre where it was.
+export function placementToDrawParams(rect, box, rotation, userRotation = 0) {
   const r = normalizeRotation(rotation);
   const size = displaySize(box, r, 1);
   const left = rect.x * size.width;
   const bottom = (rect.y + rect.height) * size.height;
   const anchor = displayToPdfPoint(left, bottom, { box, rotation: r, scale: 1 });
-  return {
-    x: anchor.x,
-    y: anchor.y,
-    width: rect.width * size.width,
-    height: rect.height * size.height,
-    rotate: r,
+  const width = rect.width * size.width;
+  const height = rect.height * size.height;
+  if (!userRotation) return { x: anchor.x, y: anchor.y, width, height, rotate: r };
+
+  const turn = (deg, vx, vy) => {
+    const a = (deg * Math.PI) / 180;
+    return { x: vx * Math.cos(a) - vy * Math.sin(a), y: vx * Math.sin(a) + vy * Math.cos(a) };
   };
+  const toCentre = turn(r, width / 2, height / 2);
+  const centre = { x: anchor.x + toCentre.x, y: anchor.y + toCentre.y };
+  const rotate = r - userRotation;
+  const fromCentre = turn(rotate, width / 2, height / 2);
+  return { x: centre.x - fromCentre.x, y: centre.y - fromCentre.y, width, height, rotate };
 }
 
 export function fitScale(box, rotation, containerWidth, maxScale = 2) {
