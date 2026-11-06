@@ -5,8 +5,8 @@ import { fontCss } from '../lib/dateText.js';
 export const FONT_PX = 64; // ~400 dpi at 11 pt: sharp when zoomed, a quarter of the memory of 128 px
 const PAD = 0.12; // breathing room around the text, in em
 
-export async function renderText(text, fontId) {
-  const font = fontCss(fontId, FONT_PX);
+export async function renderText(text, fontId, bold = false) {
+  const font = fontCss(fontId, FONT_PX, bold);
   try {
     await document.fonts.load(font, text);
   } catch {

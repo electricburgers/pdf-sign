@@ -6,6 +6,7 @@ import { keyToAction } from '../lib/keyboard.js';
 import { rafThrottle } from '../lib/schedule.js';
 import { state, placements, history, bus, select, effectiveImage, KIND_LABEL } from '../app/state.js';
 import { moveTo, moveBy, resizeTo, resizeBy, remove } from '../app/actions.js';
+import { showLoupe, hideLoupe } from './loupe.js';
 import { $ } from './dom.js';
 
 const elements = new Map(); // id -> element (current page only)
@@ -86,6 +87,7 @@ function onPointerDown(e) {
     const dy = (cy - sy) / H;
     if (resizing) resizeTo(id, start.width + dx, start);
     else moveTo(id, { x: start.x + dx, y: start.y + dy });
+    showLoupe(placements.get(id), el.firstChild);
   });
   const onMove = (ev) => apply(ev.clientX, ev.clientY);
   const onUp = (ev) => {
@@ -97,6 +99,7 @@ function onPointerDown(e) {
     const end = placements.get(id);
     if (end && end.x === start.x && end.y === start.y && end.width === start.width) history.drop(); // a tap, not a drag
     el.classList.remove('resizing');
+    hideLoupe();
     el.removeEventListener('pointermove', onMove);
     el.removeEventListener('pointerup', onUp);
     el.removeEventListener('pointercancel', onUp);

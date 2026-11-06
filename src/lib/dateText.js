@@ -16,8 +16,21 @@ export function fontById(id) {
   return DATE_FONTS.find((f) => f.id === id) || DATE_FONTS[0];
 }
 
-export function fontCss(id, px) {
-  return `${px}px ${fontById(id).family}`;
+export function fontCss(id, px, bold = false) {
+  return `${bold ? 'bold ' : ''}${px}px ${fontById(id).family}`;
+}
+
+// Free text sizes, as a multiple of the normal size (11 pt on a Letter page).
+export const TEXT_SIZES = [
+  { id: 's', label: 'Small', scale: 0.75 },
+  { id: 'm', label: 'Normal', scale: 1 },
+  { id: 'l', label: 'Large', scale: 1.5 },
+  { id: 'xl', label: 'Extra large', scale: 2 },
+];
+export const DEFAULT_TEXT_SIZE = 'm';
+
+export function sizeScale(id) {
+  return (TEXT_SIZES.find((s) => s.id === id) || TEXT_SIZES[1]).scale;
 }
 
 export const MAX_DATE_CHARS = 40;

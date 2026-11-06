@@ -126,6 +126,7 @@
               <div class="page" id="page">
                 <canvas id="pageCanvas" role="img" aria-label="PDF page preview"></canvas>
                 <div class="overlay" id="overlay"></div>
+                <div class="loupe" id="loupe" hidden aria-hidden="true"><canvas width="240" height="240"></canvas></div>
               </div>
             </div>
           </div>
@@ -236,6 +237,16 @@
         </label>
         <button class="btn" type="button" id="addText">Add text</button>
       </div>
+      <fieldset class="chip-group">
+        <legend>Size</legend>
+        <div class="chips">
+          <label class="chip-option"><input type="radio" name="textSize" value="s"><span>Small</span></label>
+          <label class="chip-option"><input type="radio" name="textSize" value="m" checked><span>Normal</span></label>
+          <label class="chip-option"><input type="radio" name="textSize" value="l"><span>Large</span></label>
+          <label class="chip-option"><input type="radio" name="textSize" value="xl"><span>Extra large</span></label>
+          <label class="chip-option"><input type="checkbox" id="textBold"><span><strong>Bold</strong></span></label>
+        </div>
+      </fieldset>
       <p class="date-preview" id="textPreview" aria-hidden="true"></p>
       <div class="text-history" id="textHistory" hidden>
         <h4 id="textHistoryTitle">Recent text</h4>

@@ -3,6 +3,14 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.12.0] - 2026-11-06
+
+### Added
+- Pinned text: tap the star on a recent text chip to pin it. Pinned text stays at the top of the Free text sheet and is never pushed out by newer text.
+- Text size and bold: Free text now has Small, Normal, Large and Extra large chips and a Bold chip. The chips remember the size and weight with each recent text.
+- Magnifier: while you drag or resize an item, a small zoomed circle in the top corner (the one away from the item) shows the item over the page, so you can line it up without your finger hiding it.
+- 14 new tests (354 in total).
+
 ## [1.11.0] - 2026-11-06
 
 ### Changed
