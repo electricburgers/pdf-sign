@@ -34,7 +34,7 @@ export const bus = {
   },
 };
 
-export const KIND_LABEL = { signature: 'Signature', initials: 'Initials', date: 'Date', text: 'Text', stamp: 'Mark' };
+export const KIND_LABEL = { signature: 'Signature', initials: 'Initials', date: 'Date', text: 'Text', stamp: 'Mark', redact: 'Redaction' };
 
 // The image to show and export for a placement: its recolored copy if it has
 // one, else its own rendered image, else the saved signature/initials.

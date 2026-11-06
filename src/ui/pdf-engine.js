@@ -50,6 +50,47 @@ export async function pageFields(doc, index) {
   return fields;
 }
 
+// Pictures of pages with black boxes burned in, for redaction. `bytes` is a PDF
+// whose form fields are already baked in; rects are fractions of the displayed page.
+// Rendered big enough to stay sharp (about 240 dpi) within the canvas limits.
+const RASTER_SCALE = 3.3;
+const MAX_RASTER_PIXELS = 12_000_000;
+
+export async function rasterizePages(bytes, jobs) {
+  const doc = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+  const out = new Map();
+  try {
+    for (const { page: index, rects } of jobs) {
+      const page = await doc.getPage(index + 1);
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(RASTER_SCALE, Math.sqrt(MAX_RASTER_PIXELS / (base.width * base.height)));
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+      ctx.fillStyle = '#000000';
+      for (const r of rects) {
+        // Round outward by a pixel so no sliver of the original shows at an edge.
+        const x = Math.floor(r.x * canvas.width) - 1;
+        const y = Math.floor(r.y * canvas.height) - 1;
+        ctx.fillRect(x, y, Math.ceil(r.width * canvas.width) + 3, Math.ceil(r.height * canvas.height) + 3);
+      }
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error(`Page ${index + 1} couldn't be redacted.`);
+      out.set(index, new Uint8Array(await blob.arrayBuffer()));
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+  } finally {
+    await doc.destroy();
+  }
+  return out;
+}
+
 export async function pageSize(doc, index) {
   const vp = (await doc.getPage(index + 1)).getViewport({ scale: 1 });
   return { width: vp.width, height: vp.height };

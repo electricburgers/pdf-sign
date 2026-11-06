@@ -1,7 +1,7 @@
 // Add buttons plus the selection tools. The move and size buttons are the
 // single-tap alternative to dragging that WCAG 2.5.7 requires.
 import { state, placements, history, bus, KIND_LABEL } from '../app/state.js';
-import { addKind, moveBy, resizeBy, rotateBy, setColor, remove, copyToAllPages, undo, redo, ROTATE_STEP } from '../app/actions.js';
+import { addKind, addRedaction, moveBy, resizeBy, rotateBy, setColor, remove, copyToAllPages, undo, redo, ROTATE_STEP } from '../app/actions.js';
 import { $, $$ } from './dom.js';
 
 const TAP_MOVE = 0.02; // fraction of the page per tap
@@ -12,6 +12,7 @@ function updateAddButtons() {
   const ready = !!state.doc;
   $('#addSignature').disabled = !ready || !state.assets.signature;
   $('#addInitials').disabled = !ready || !state.assets.initials;
+  $('#addRedact').disabled = !ready;
 }
 
 function updateSelection() {
@@ -51,6 +52,7 @@ function updateSummary() {
 export function initToolbar() {
   $('#addSignature').addEventListener('click', () => addKind('signature'));
   $('#addInitials').addEventListener('click', () => addKind('initials'));
+  $('#addRedact').addEventListener('click', () => addRedaction());
 
   $$('[data-nudge]').forEach((btn) => {
     btn.addEventListener('click', () => {

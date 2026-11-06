@@ -20,7 +20,7 @@ const moved = []; // { node, placeholder } for items living in the More sheet
 function relocateToMore() {
   if (!moved.length) {
     const body = $('#moreBody');
-    const nodes = [$('.mark-buttons'), $('#toggleFields'), $('#flatten').closest('label'), $('#batch'), $('#batchInput'), $('#batchHint')];
+    const nodes = [$('.mark-buttons'), $('#toggleFields'), $('#addRedact'), $('#redactHint'), $('#flatten').closest('label'), $('#batch'), $('#batchInput'), $('#batchHint')];
     for (const node of nodes) {
       const placeholder = document.createComment('');
       node.before(placeholder);
@@ -113,7 +113,7 @@ export function initQuickBar() {
   // Adding something is the end of the task: close the sheet to show the page.
   for (const sel of ['#addDate', '#addText']) $(sel).addEventListener('click', () => closeSheet());
   $('#moreBody').addEventListener('click', (e) => {
-    if (e.target.closest('[data-stamp]')) closeSheet();
+    if (e.target.closest('[data-stamp], #addRedact')) closeSheet();
   });
 
   $('#setupToggle').addEventListener('click', () => setSetup(app.dataset.setup !== 'open'));

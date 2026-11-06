@@ -841,3 +841,20 @@
 .field-hotspot:focus-visible {
   background: rgba(43, 82, 196, 0.28);
 }
+
+/* ---------- redaction boxes ---------- */
+.placement.redact,
+.placement.redact[aria-pressed='true'],
+.placement.redact.resizing {
+  background: #000000;
+}
+.placement.redact img {
+  display: none;
+}
+.placement.redact {
+  outline: 2px dashed #f5c242;
+  outline-offset: 0;
+}
+.placement.redact:focus-visible {
+  outline: 3px solid #f5c242;
+}

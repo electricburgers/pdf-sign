@@ -2,7 +2,7 @@
 // independent of zoom level. List operations are immutable.
 import { clampRect } from './geometry.js';
 
-export const KINDS = ['signature', 'initials', 'date', 'text', 'stamp'];
+export const KINDS = ['signature', 'initials', 'date', 'text', 'stamp', 'redact'];
 export const MIN_WIDTH = 0.03;
 const DEFAULT_WIDTH = { signature: 0.35, initials: 0.12, stamp: 0.04 };
 const DEFAULT_Y = { signature: 0.78, initials: 0.88, date: 0.7, text: 0.6, stamp: 0.5 };

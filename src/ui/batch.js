@@ -2,7 +2,7 @@
 import { isPdfFile, isPdfBytes, checkFileSize, signedFileName } from '../lib/validate.js';
 import { createZip, uniqueNames } from '../lib/zip.js';
 import { state, placements, bus } from '../app/state.js';
-import { buildExportItems, flattenWanted } from './export-items.js';
+import { buildExportItems, flattenWanted, rasterize } from './export-items.js';
 import { save } from './save.js';
 import { toast } from './announce.js';
 import { $ } from './dom.js';
@@ -33,7 +33,7 @@ async function run(files, button) {
       button.textContent = `Signing ${i + 1} of ${files.length}…`;
       try {
         const skipped = [];
-        const bytes = await signPdf(await readPdf(file), items, {}, { flatten, refit: true, skipped });
+        const bytes = await signPdf(await readPdf(file), items, {}, { flatten, refit: true, skipped, rasterize });
         skippedCount += skipped.length;
         results.push({ name: signedFileName(file.name), bytes });
       } catch (err) {

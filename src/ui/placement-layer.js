@@ -5,7 +5,7 @@
 import { keyToAction } from '../lib/keyboard.js';
 import { rafThrottle } from '../lib/schedule.js';
 import { state, placements, history, bus, select, effectiveImage, KIND_LABEL } from '../app/state.js';
-import { moveTo, moveBy, resizeTo, resizeBy, remove } from '../app/actions.js';
+import { moveTo, moveBy, resizeTo, resizeBy, resizeBoxTo, remove } from '../app/actions.js';
 import { showLoupe, hideLoupe } from './loupe.js';
 import { $ } from './dom.js';
 
@@ -47,6 +47,7 @@ function sync(p) {
   const img = el.firstChild;
   if (asset && img.getAttribute('src') !== asset.dataUrl) img.src = asset.dataUrl;
   const what = p.text ? `${KIND_LABEL[p.kind]} "${p.text}"` : KIND_LABEL[p.kind];
+  el.classList.toggle('redact', p.kind === 'redact');
   el.setAttribute('aria-label', `${what} on page ${p.page + 1}`);
   el.setAttribute('aria-pressed', String(p.id === state.selectedId));
   styleElement(el, p);
@@ -88,7 +89,8 @@ function onPointerDown(e) {
   const apply = rafThrottle((cx, cy) => {
     const dx = (cx - sx) / W;
     const dy = (cy - sy) / H;
-    if (resizing) resizeTo(id, start.width + dx, start);
+    if (resizing && start.kind === 'redact') resizeBoxTo(id, start.width + dx, start.height + dy, start);
+    else if (resizing) resizeTo(id, start.width + dx, start);
     else moveTo(id, { x: start.x + dx, y: start.y + dy });
     showLoupe(placements.get(id), el.firstChild);
   });
@@ -97,10 +99,11 @@ function onPointerDown(e) {
     apply.cancel(); // commit the final position directly instead of waiting a frame
     const dx = (ev.clientX - sx) / W;
     const dy = (ev.clientY - sy) / H;
-    if (resizing) resizeTo(id, start.width + dx, start);
+    if (resizing && start.kind === 'redact') resizeBoxTo(id, start.width + dx, start.height + dy, start);
+    else if (resizing) resizeTo(id, start.width + dx, start);
     else moveTo(id, { x: start.x + dx, y: start.y + dy });
     const end = placements.get(id);
-    if (end && end.x === start.x && end.y === start.y && end.width === start.width) history.drop(); // a tap, not a drag
+    if (end && end.x === start.x && end.y === start.y && end.width === start.width && end.height === start.height) history.drop(); // a tap, not a drag
     el.classList.remove('resizing');
     hideLoupe();
     el.removeEventListener('pointermove', onMove);

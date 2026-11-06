@@ -2,7 +2,7 @@
 // through these functions, so behavior is identical across input methods.
 // Each change records an undo step first.
 import { clampRect } from '../lib/geometry.js';
-import { resizePlacement, defaultPlacement, applyToAllPages } from '../lib/placements.js';
+import { resizePlacement, defaultPlacement, applyToAllPages, createPlacement, MIN_WIDTH } from '../lib/placements.js';
 import { state, placements, history, aspectOpts, imageAspect, pageAspect, select, KIND_LABEL } from './state.js';
 import { announce } from '../ui/announce.js';
 import { tintImage } from '../ui/tint.js';
@@ -31,8 +31,29 @@ export function moveBy(id, dx, dy) {
   moveTo(id, { x: p.x + dx, y: p.y + dy });
 }
 
+// Redaction boxes are plain rectangles: any width and height, no picture to keep in shape.
+export function resizeBoxTo(id, width, height, base = placements.get(id)) {
+  if (!base) return;
+  const w = Math.min(Math.max(width, MIN_WIDTH), 1 - base.x);
+  const h = Math.min(Math.max(height, MIN_WIDTH / 4), 1 - base.y);
+  placements.update(id, { width: w, height: h });
+}
+
+export function addRedaction() {
+  if (!state.doc) return null;
+  history.record();
+  const p = placements.add(createPlacement({ kind: 'redact', page: state.pageIndex, x: 0.3, y: 0.4, width: 0.4, height: 0.04 }));
+  select(p.id);
+  announce(`Redaction box added to page ${state.pageIndex + 1}. Move it over what to hide, and resize it.`);
+  return p;
+}
+
 export function resizeTo(id, width, base = placements.get(id)) {
   if (!base) return;
+  if (base.kind === 'redact') {
+    resizeBoxTo(id, width, base.height * (Math.max(width, MIN_WIDTH) / base.width), base);
+    return;
+  }
   const [next] = resizePlacement([base], id, width, aspectOpts(base, base.page));
   placements.update(id, { x: next.x, y: next.y, width: next.width, height: next.height });
 }
@@ -47,7 +68,7 @@ export function resizeBy(id, delta) {
 // Tilt by `deg` clockwise; 0 straightens. Kept within -180..180.
 export function rotateBy(id, deg) {
   const p = placements.get(id);
-  if (!p) return;
+  if (!p || p.kind === 'redact') return; // a redaction box stays square to the page
   history.record(`rotate:${id}`);
   const next = deg === 0 ? 0 : (((((p.rotation || 0) + deg + 180) % 360) + 360) % 360) - 180;
   placements.update(id, { rotation: next });
@@ -89,7 +110,7 @@ export function copyToAllPages(id) {
     .all()
     .filter((p) => p.id === id || !(p.kind === sel.kind && p.x === sel.x && p.y === sel.y && p.width === sel.width));
   placements.replaceAll(
-    applyToAllPages(kept, id, state.pageCount, { imageAspect: imageAspect(sel), pageAspectOf: pageAspect }),
+    applyToAllPages(kept, id, state.pageCount, sel.kind === 'redact' ? {} : { imageAspect: imageAspect(sel), pageAspectOf: pageAspect }),
   );
   announce(`${KIND_LABEL[sel.kind]} copied to all ${state.pageCount} pages.`);
 }

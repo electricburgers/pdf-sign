@@ -1,7 +1,7 @@
 // Export: embed the images and hand the signed PDF to the browser.
 import { signedFileName } from '../lib/validate.js';
 import { state, placements } from '../app/state.js';
-import { buildExportItems, flattenWanted } from './export-items.js';
+import { buildExportItems, flattenWanted, rasterize, hasRedactions } from './export-items.js';
 import { save } from './save.js';
 import { toast } from './announce.js';
 import { $ } from './dom.js';
@@ -17,10 +17,10 @@ export function initDownload() {
     try {
       // pdf-lib is only needed now, so it loads on the first download.
       const { signPdf } = await import('../lib/exportPdf.js');
-      const out = await signPdf(state.pdfBytes, await buildExportItems(), {}, { flatten: flattenWanted() });
+      const out = await signPdf(state.pdfBytes, await buildExportItems(), {}, { flatten: flattenWanted(), rasterize });
       const name = signedFileName(state.fileName);
       save(out, name);
-      toast(`Downloaded ${name}.`);
+      toast(hasRedactions() ? `Downloaded ${name}. Redacted pages are now pictures: their text can't be selected or searched.` : `Downloaded ${name}.`);
     } catch (err) {
       toast(err.message || "The PDF couldn't be signed.", { error: true });
     } finally {

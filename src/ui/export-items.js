@@ -8,6 +8,10 @@ export async function buildExportItems() {
   const shrunk = new Map(); // source data URL -> shrunk image: one decode per distinct image, not per placement
   const items = [];
   for (const p of placements.all()) {
+    if (p.kind === 'redact') {
+      items.push({ ...p }); // a box, not a picture
+      continue;
+    }
     const source = effectiveImage(p);
     if (!source) throw new Error(`No ${p.kind} image has been added yet.`);
     let small = shrunk.get(source.dataUrl);
@@ -17,6 +21,10 @@ export async function buildExportItems() {
   }
   return items;
 }
+
+// Turns pages into pictures with the redaction boxes burned in (see exportPdf.js).
+export const rasterize = async (bytes, jobs) => (await import('./pdf-engine.js')).rasterizePages(bytes, jobs);
+export const hasRedactions = () => placements.all().some((p) => p.kind === 'redact');
 
 export const flattenWanted = () => document.querySelector('#flatten').checked;
 export const currentFileName = () => state.fileName;
