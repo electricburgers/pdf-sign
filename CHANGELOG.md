@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Added
 - Redaction: "Add redaction box" (in More) puts a black box on the page. Move it over what to hide, drag the corner to give it any width and height, and copy it to all pages for a repeating header or footer. On download, every redacted page is rebuilt as a picture with the box burned in, and the file is rebuilt from only the pages and parts it needs, so the hidden text, images, form values, links, comments, bookmarks, tags, attachments and document details are gone from the file, not just covered. Pages without a redaction are left as they were.
 - The download message tells you that redacted pages can no longer be selected or searched, and Sign other PDFs applies redactions the same way.
-- 24 new tests (378 in total). They read every byte and decoded stream of the result to check that the secret text, a form field value, the title and author are really gone, that only the expected page objects remain, and that rotated pages keep their look.
+- 22 new tests (388 in total). They read every byte and decoded stream of the result to check that the secret text, a form field value, the title and author are really gone, that only the expected page objects remain, and that rotated pages keep their look.
 
 ### Changed
 - When a file has redactions, its form fields are baked into the pages (so a box can cover them), and links, comments, bookmarks and metadata are removed from the whole file.
