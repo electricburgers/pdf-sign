@@ -3,6 +3,12 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.10.1] - 2026-11-06
+
+### Fixed
+- The resize dot was big enough to cover the text it was resizing. It is now a small dot that sits just outside the item's corner, with the same large touch area as before. While you drag it, the move grip and the blue tint are hidden so you can see the text at its new size. Near the right or bottom edge of the page the dot moves inside the item so it never goes off the page.
+- 4 new tests.
+
 ## [1.10.0] - 2026-11-06
 
 ### Added

@@ -381,16 +381,39 @@
 }
 .handle {
   position: absolute;
-  right: -16px;
-  bottom: -16px;
-  width: 32px;
-  height: 32px;
+  right: -14px;
+  bottom: -14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #2b52c4;
-  border: 3px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: nwse-resize;
   touch-action: none;
+  display: none;
+}
+/* Invisible 44px touch target around the small dot. */
+.handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+}
+.placement.handle-in .handle {
+  right: 4px;
+  bottom: 4px;
+}
+.placement.resizing {
+  background: transparent;
+}
+.placement.resizing .handle {
+  opacity: 0.6;
+}
+.placement.resizing .grip {
   display: none;
 }
 .placement[aria-pressed='true'] .handle {

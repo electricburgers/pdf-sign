@@ -16,6 +16,7 @@ function styleElement(el, p) {
   el.style.width = `${p.width * 100}%`;
   el.style.height = `${p.height * 100}%`;
   el.style.transform = p.rotation ? `rotate(${p.rotation}deg)` : '';
+  el.classList.toggle('handle-in', p.x + p.width > 0.9 || p.y + p.height > 0.9); // keep the resize dot on the page
   el.classList.toggle('grip-up', p.y + p.height > 0.78); // keep the grip on the page near the bottom edge
 }
 
@@ -74,6 +75,7 @@ function onPointerDown(e) {
 
   history.record(); // one undo step per drag
   const resizing = e.target.classList.contains('handle');
+  if (resizing) el.classList.add('resizing'); // hide the grip and tint so the text stays visible
   const sx = e.clientX;
   const sy = e.clientY;
   // Read once at the start; never read layout during the drag.
@@ -94,6 +96,7 @@ function onPointerDown(e) {
     else moveTo(id, { x: start.x + dx, y: start.y + dy });
     const end = placements.get(id);
     if (end && end.x === start.x && end.y === start.y && end.width === start.width) history.drop(); // a tap, not a drag
+    el.classList.remove('resizing');
     el.removeEventListener('pointermove', onMove);
     el.removeEventListener('pointerup', onUp);
     el.removeEventListener('pointercancel', onUp);
