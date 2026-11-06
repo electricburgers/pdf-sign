@@ -3,6 +3,16 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.10.0] - 2026-11-06
+
+### Added
+- Recent text: the Free text sheet remembers what you've placed (with its font) and lists it as tappable chips, so the same words can go on other pages in a tap. Each chip has a × to forget it. Stored only in this browser.
+- Drag grip: a selected item now has a round grip a short way below it (above it near the bottom of the page). Hold the grip and drag to move the item, so your finger isn't covering the spot you're aiming for.
+- Tests for the text history, the proportions fix and the grip.
+
+### Fixed
+- Free text, dates and stamps came out at the wrong proportions on the page, because their shape was measured against a default 3:1 box instead of the rendered image. They now keep their true proportions, also when resized.
+
 ## [1.9.0] - 2026-10-11
 
 ### Added

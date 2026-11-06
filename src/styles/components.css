@@ -654,3 +654,95 @@
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* ---------- recent free text ---------- */
+.text-history {
+  margin-top: 12px;
+}
+.text-history h4 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.text-history ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.text-history li {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.history-chip,
+.history-remove {
+  min-height: var(--tap);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.history-chip {
+  max-width: 14em;
+  padding: 0 6px 0 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-remove {
+  min-width: var(--tap);
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+/* ---------- drag grip: hold it so your finger stays off the item ---------- */
+.grip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 40px);
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #2b52c4;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+  touch-action: none;
+}
+.grip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 2px;
+  height: 37px;
+  margin-left: -1px;
+  background: #2b52c4;
+}
+.grip svg {
+  width: 26px;
+  height: 26px;
+}
+.placement.grip-up .grip {
+  top: auto;
+  bottom: calc(100% + 40px);
+}
+.placement.grip-up .grip::before {
+  bottom: auto;
+  top: 100%;
+}
+.placement[aria-pressed='true'] .grip {
+  display: flex;
+}

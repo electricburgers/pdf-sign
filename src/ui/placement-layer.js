@@ -16,6 +16,7 @@ function styleElement(el, p) {
   el.style.width = `${p.width * 100}%`;
   el.style.height = `${p.height * 100}%`;
   el.style.transform = p.rotation ? `rotate(${p.rotation}deg)` : '';
+  el.classList.toggle('grip-up', p.y + p.height > 0.78); // keep the grip on the page near the bottom edge
 }
 
 function createElement(p) {
@@ -26,7 +27,7 @@ function createElement(p) {
   el.setAttribute('role', 'button');
   el.setAttribute('aria-roledescription', 'movable image');
   el.setAttribute('aria-describedby', 'placementHelp');
-  el.innerHTML = '<img alt=""><span class="handle" aria-hidden="true"></span>';
+  el.innerHTML = '<img alt=""><span class="handle" aria-hidden="true"></span><span class="grip" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
   el.addEventListener('pointerdown', onPointerDown);
   el.addEventListener('keydown', onKeyDown);
   el.addEventListener('focus', () => select(p.id));

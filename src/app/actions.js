@@ -99,7 +99,7 @@ export function addTextItem(kind, image, text, font, width) {
   if (!state.doc) return null;
   history.record();
   const p = placements.add(
-    defaultPlacement(kind, state.pageIndex, aspectOpts(image), { image, text, font, width }),
+    defaultPlacement(kind, state.pageIndex, aspectOpts({ image }), { image, text, font, width }),
   );
   select(p.id);
   announce(`${KIND_LABEL[kind]} added to page ${state.pageIndex + 1}.`);
