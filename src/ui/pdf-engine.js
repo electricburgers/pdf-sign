@@ -2,6 +2,7 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import workerSrc from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import { createLru } from '../lib/lru.js';
+import { fieldFractions } from '../lib/fields.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
@@ -25,7 +26,28 @@ export async function loadDocument(bytes) {
     }),
   );
   cache.clear();
+  fieldCache.clear();
   return { doc, aspects };
+}
+
+const fieldCache = new Map(); // page index -> fields (read once per page)
+
+// Fillable text and signature fields on a page, as fractions of the displayed page.
+export async function pageFields(doc, index) {
+  if (fieldCache.has(index)) return fieldCache.get(index);
+  const page = await doc.getPage(index + 1);
+  const vp = page.getViewport({ scale: 1 });
+  const annotations = await page.getAnnotations({ intent: 'display' });
+  const fields = annotations
+    .filter((a) => a.subtype === 'Widget' && a.rect && !a.readOnly && (a.fieldType === 'Tx' || a.fieldType === 'Sig'))
+    .map((a) => ({
+      name: a.fieldName || '',
+      type: a.fieldType,
+      rect: fieldFractions(vp.convertToViewportRectangle(a.rect), vp.width, vp.height),
+    }))
+    .filter((f) => f.rect.width > 0.005 && f.rect.height > 0.005);
+  fieldCache.set(index, fields);
+  return fields;
 }
 
 export async function pageSize(doc, index) {

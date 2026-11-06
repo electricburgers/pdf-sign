@@ -10,6 +10,10 @@ export function showLoupe(p, img) {
   const page = state.pageDisplay;
   const source = $('#pageCanvas');
   if (!box || !source || !img || !source.width) return;
+  if (state.zoom > 1) {
+    box.hidden = true; // already zoomed in: the magnifier would only get in the way
+    return;
+  }
   const rect = { x: p.x * page.width, y: p.y * page.height, width: p.width * page.width, height: p.height * page.height };
   const { sx, sy, side } = loupeRegion(rect, page);
   box.dataset.corner = loupeCorner(rect, page);

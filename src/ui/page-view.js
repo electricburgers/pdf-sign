@@ -4,6 +4,7 @@ import { layoutFor } from '../lib/layout.js';
 import { debounce } from '../lib/schedule.js';
 import { state, bus, select } from '../app/state.js';
 import { toast } from './announce.js';
+import { resetView } from './zoom.js';
 import { $ } from './dom.js';
 
 // Bigger previews on bigger screens.
@@ -34,7 +35,8 @@ async function show() {
       cssScale = Math.min(cssScale, Math.max(0.4, maxH / size.height));
     }
     const css = displaySize(box, 0, cssScale);
-    const canvas = await renderPage(state.doc, index, cssScale, size);
+    // Zoomed in? Draw more pixels (the canvas keeps its size on screen) so it stays sharp.
+    const canvas = await renderPage(state.doc, index, cssScale * (state.zoom || 1), size);
     if (!canvas || my !== token) return; // superseded
 
     // Writes.
@@ -63,6 +65,7 @@ export function goToPage(index) {
   if (index < 0 || index >= state.pageCount || index === state.pageIndex) return;
   state.pageIndex = index;
   select(null);
+  resetView();
   show();
 }
 
@@ -70,7 +73,9 @@ export function initPageView() {
   $('#prevPage').addEventListener('click', () => goToPage(state.pageIndex - 1));
   $('#nextPage').addEventListener('click', () => goToPage(state.pageIndex + 1));
 
+  bus.on('zoomsettled', show);
   bus.on('document', () => {
+    resetView();
     $('#emptyState').hidden = true;
     $('#editorBody').hidden = false;
     show().then(() => {

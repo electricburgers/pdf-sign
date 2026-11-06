@@ -19,6 +19,7 @@ export const state = {
   pageAspects: [], // displayed width / height for every page (rotation applied)
   pageDisplay: { width: 1, height: 1 }, // CSS px of the current preview
   selectedId: null,
+  zoom: 1, // page preview zoom (1 = fit)
 };
 
 const listeners = new Map();

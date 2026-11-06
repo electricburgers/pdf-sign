@@ -3,6 +3,14 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.13.0] - 2026-11-06
+
+### Added
+- Zoom: pinch the page with two fingers (or Ctrl + scroll / trackpad pinch on a computer) to zoom up to 4x, and drag to move around while zoomed in. There are also −, 100% and + buttons above the page. Dragging and resizing items still lines up at any zoom, and the page redraws sharp once you stop.
+- Form fields: "Show form fields" (in More) outlines the fillable fields on the current page. Tap one to fit your signature, initials or today's date into it. Signature fields get your signature, fields named like "initials" get your initials, fields named like "date" get the date.
+- More stamps: filled dot, circle, line and arrow, next to the checkmark and X. Lines and arrows start wider than a tick box.
+- 12 new tests (366 in total) for the zoom math, field detection and fitting, and the stamps.
+
 ## [1.12.0] - 2026-11-06
 
 ### Added

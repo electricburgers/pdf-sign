@@ -80,7 +80,10 @@ function onPointerDown(e) {
   const sx = e.clientX;
   const sy = e.clientY;
   // Read once at the start; never read layout during the drag.
-  const { width: W, height: H } = state.pageDisplay;
+  // The page may be zoomed: a screen pixel is then 1/zoom of a page pixel.
+  const z = state.zoom || 1;
+  const W = state.pageDisplay.width * z;
+  const H = state.pageDisplay.height * z;
 
   const apply = rafThrottle((cx, cy) => {
     const dx = (cx - sx) / W;

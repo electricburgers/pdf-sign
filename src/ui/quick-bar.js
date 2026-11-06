@@ -20,7 +20,7 @@ const moved = []; // { node, placeholder } for items living in the More sheet
 function relocateToMore() {
   if (!moved.length) {
     const body = $('#moreBody');
-    const nodes = [$('.mark-buttons'), $('#flatten').closest('label'), $('#batch'), $('#batchInput'), $('#batchHint')];
+    const nodes = [$('.mark-buttons'), $('#toggleFields'), $('#flatten').closest('label'), $('#batch'), $('#batchInput'), $('#batchHint')];
     for (const node of nodes) {
       const placeholder = document.createComment('');
       node.before(placeholder);

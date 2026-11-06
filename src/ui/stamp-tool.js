@@ -1,10 +1,8 @@
 // Checkmark and X stamps for ticking boxes on forms.
 import { addTextItem } from '../app/actions.js';
 import { state, bus } from '../app/state.js';
-import { renderStamp, stampLabel } from './stamp-render.js';
+import { renderStamp, stampLabel, stampWidth } from './stamp-render.js';
 import { $$ } from './dom.js';
-
-const STAMP_WIDTH = 0.04; // fraction of the page width
 
 export function initStampTool() {
   const buttons = $$('[data-stamp]');
@@ -12,7 +10,7 @@ export function initStampTool() {
   buttons.forEach((b) =>
     b.addEventListener('click', () => {
       const shape = b.dataset.stamp;
-      addTextItem('stamp', renderStamp(shape), stampLabel(shape), '', STAMP_WIDTH);
+      addTextItem('stamp', renderStamp(shape), stampLabel(shape), '', stampWidth(shape));
     }),
   );
   bus.on('document', update);
