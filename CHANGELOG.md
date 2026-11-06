@@ -3,6 +3,11 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.15.0] - 2026-11-06
+
+### Fixed
+- Downloading a PDF with a redaction no longer fails with "n.destroy is not a function". The page renderer now releases the document the way the current PDF library expects, and the same fix applies when opening another file.
+
 ## [1.14.0] - 2026-11-06
 
 ### Added

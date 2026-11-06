@@ -86,7 +86,7 @@ export async function rasterizePages(bytes, jobs) {
       canvas.height = 0;
     }
   } finally {
-    await doc.destroy();
+    await doc.loadingTask.destroy();
   }
   return out;
 }

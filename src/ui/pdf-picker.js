@@ -18,7 +18,7 @@ async function open(file) {
     // pdf.js is loaded on first use so the page itself starts faster.
     const { loadDocument } = await import('./pdf-engine.js');
     const { doc, aspects } = await loadDocument(bytes);
-    if (state.doc) state.doc.destroy();
+    if (state.doc) state.doc.loadingTask.destroy();
     Object.assign(state, {
       doc,
       pdfBytes: bytes,

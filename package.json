@@ -1,6 +1,6 @@
 {
   "name": "pdf-sign",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Self-hosted web app that signs PDFs with your signature and initials images, entirely in the browser.",
   "scripts": {
     "test": "vitest run",
