@@ -3,6 +3,11 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.16.0] - 2026-11-06
+
+### Added
+- 30 new tests (420 in total) for edge cases in zoom and pan limits, form field detection and fitting, the zip writer, the page cache, rotation and coordinate maths, the security policy, and signature image clean-up.
+
 ## [1.15.0] - 2026-11-06
 
 ### Fixed

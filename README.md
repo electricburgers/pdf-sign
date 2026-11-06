@@ -1,6 +1,6 @@
 # PDF Sign
 
-**Version 1.15.0 — 2026-11-06 10:36 (UTC-5)** · see [CHANGELOG.md](CHANGELOG.md)
+**Version 1.16.0 — 2026-11-06 10:40 (UTC-5)** · see [CHANGELOG.md](CHANGELOG.md)
 
 A small self-hosted web app that does one thing: put your **signature** and **initials** images on a PDF.
 
