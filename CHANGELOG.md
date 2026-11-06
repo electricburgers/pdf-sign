@@ -3,6 +3,14 @@
 All notable changes to PDF Sign are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/).
 
+## [1.11.0] - 2026-11-06
+
+### Changed
+- Faster exports with many items. Each distinct signature, initials or text image is now shrunk once per export instead of once per placement (it used to be redone whenever two images alternated), and each page's size and rotation are read once instead of once per item.
+- Removing a signature or initials image now removes all its placements in one step instead of redrawing the page once per item.
+- Selecting an item now updates only the two items that changed instead of every item on the page.
+- 5 new tests (340 in total) guard these.
+
 ## [1.10.1] - 2026-11-06
 
 ### Fixed

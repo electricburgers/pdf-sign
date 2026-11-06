@@ -29,6 +29,7 @@ export async function signPdf(pdfBytes, placements, assets, { flatten = false, r
 
   const pageCount = doc.getPageCount();
   const embedded = new Map();
+  const geometry = new Map(); // page index -> { page, box, angle }: read once per page, not once per item
 
   for (const p of placements) {
     if (skipped && Number.isInteger(p.page) && p.page >= pageCount) {
@@ -46,9 +47,12 @@ export async function signPdf(pdfBytes, placements, assets, { flatten = false, r
     const key = p.image || p.kind;
     if (!embedded.has(key)) embedded.set(key, await embed(doc, asset));
 
-    const page = doc.getPage(p.page);
-    const box = page.getCropBox();
-    const angle = page.getRotation().angle;
+    let g = geometry.get(p.page);
+    if (!g) {
+      const pg = doc.getPage(p.page);
+      geometry.set(p.page, (g = { page: pg, box: pg.getCropBox(), angle: pg.getRotation().angle }));
+    }
+    const { page, box, angle } = g;
     let rect = p;
     if (refit && p.imageAspect) {
       const size = displaySize(box, angle, 1);

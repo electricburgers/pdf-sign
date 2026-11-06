@@ -5,11 +5,13 @@ import { downscaleImage } from './image.js';
 
 export async function buildExportItems() {
   const decoded = new Map(); // identical images share one decode and one embed
+  const shrunk = new Map(); // source data URL -> shrunk image: one decode per distinct image, not per placement
   const items = [];
   for (const p of placements.all()) {
     const source = effectiveImage(p);
     if (!source) throw new Error(`No ${p.kind} image has been added yet.`);
-    const small = await downscaleImage(source);
+    let small = shrunk.get(source.dataUrl);
+    if (!small) shrunk.set(source.dataUrl, (small = await downscaleImage(source)));
     if (!decoded.has(small.dataUrl)) decoded.set(small.dataUrl, parseDataUrl(small.dataUrl));
     items.push({ ...p, image: decoded.get(small.dataUrl), imageAspect: source.width / source.height });
   }

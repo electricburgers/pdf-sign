@@ -133,6 +133,7 @@ export function refitKind(kind) {
 
 export function removeKind(kind) {
   history.record();
-  for (const p of placements.all()) if (p.kind === kind) placements.remove(p.id);
+  // One pass and one change event, instead of one event (and page redraw) per item.
+  placements.replaceAll(placements.all().filter((p) => p.kind !== kind));
   if (state.selectedId && !placements.get(state.selectedId)) select(null);
 }

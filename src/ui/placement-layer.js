@@ -138,8 +138,14 @@ export function initPlacementLayer() {
 
   bus.on('page', renderPage);
   bus.on('assets', renderPage);
+  // Only the previously and newly selected items change: O(1), not O(k).
+  let shown = null;
   bus.on('selection', () => {
-    for (const [id, el] of elements) el.setAttribute('aria-pressed', String(id === state.selectedId));
+    const before = elements.get(shown);
+    if (before) before.setAttribute('aria-pressed', 'false');
+    shown = state.selectedId;
+    const after = elements.get(shown);
+    if (after) after.setAttribute('aria-pressed', 'true');
   });
 
   // Tapping empty page space clears the selection.
